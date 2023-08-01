@@ -54,13 +54,10 @@ class MultiClassImbalancedStream(datasets.base.SyntheticDataset):
         self._rng = random.Random(self.seed)
         self.n_classes = self.generator.n_classes
 
-        # assert (sum(self.imbalanceRatio) == 1, "Sum of probabilities must be 1")
-        # assert (
-        #    self.n_classes == len(self.imbalanceRatio),
-        #    "Generator number of classes"
-        #    + "and probability list should have the same size",
-        # )
-        self.generatorIterator = iter(self.generator)
+        assert sum(self.imbalanceRatio) == 1, "Sum of probabilities must be 1"
+        assert self.n_classes == len(
+            self.imbalanceRatio
+        ), "Generator number of classes and probability list should have the same size"
 
         super().__init__(
             self.generator.task,
@@ -71,14 +68,16 @@ class MultiClassImbalancedStream(datasets.base.SyntheticDataset):
         )
 
     def __iter__(self):
-        nextClassProbability = self._rng.random()
-        classIndex = -1
+        self.generatorIterator = iter(self.generator)
+        while True:
+            nextClassProbability = self._rng.random()
+            classIndex = -1
 
-        while nextClassProbability > 0:
-            classIndex += 1
-            nextClassProbability -= self.imbalanceRatio[classIndex]
-        expectedClass = classIndex
-        x, y = next(self.generatorIterator)
-        while y != expectedClass:
+            while nextClassProbability > 0:
+                classIndex += 1
+                nextClassProbability -= self.imbalanceRatio[classIndex]
+            expectedClass = classIndex
             x, y = next(self.generatorIterator)
-        yield x, y
+            while y != expectedClass:
+                x, y = next(self.generatorIterator)
+            yield x, y

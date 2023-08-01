@@ -3,6 +3,7 @@ import math
 import river
 from river.datasets import synth
 from typing import Dict
+import numpy as np
 
 
 class Evaluator:
@@ -10,6 +11,7 @@ class Evaluator:
         self.windowSize = windowSize
         self.totalObservedInstances = 0
         self.predictions = [0] * self.windowSize
+        self.prediction_value = [0] * self.windowSize
         self.correctPositivePredictions = 0
         self.numPos = 0
         self.numNeg = 0
@@ -17,7 +19,7 @@ class Evaluator:
         self.numberOfClasses = numberOfClasses
         self.rowKappa = [0.0] * self.numberOfClasses
         self.columnKappa = [0.0] * self.numberOfClasses
-        self.cm = [[0.0] * self.numberOfClasses] * self.numberOfClasses
+        self.cm = np.zeros((self.numberOfClasses, self.numberOfClasses))
 
     def addResult(self, instance: Dict[float, int], probabilties: Dict):
         _, y = instance
@@ -28,9 +30,20 @@ class Evaluator:
         ]
         pred_index = classVotes.index(max(classVotes))
         y_index = list(probabilties.keys()).index(y)
+
         prediction = list(probabilties.keys())[pred_index]
 
         if self.totalObservedInstances > self.windowSize:
+            class_to_be_removed = self.window[
+                self.totalObservedInstances % self.windowSize
+            ]
+            if self.predictions[self.totalObservedInstances % self.windowSize] == 1:
+                self.cm[class_to_be_removed][class_to_be_removed] -= 1
+            else:
+                self.cm[class_to_be_removed][
+                    self.prediction_value[self.totalObservedInstances % self.windowSize]
+                ] -= 1
+
             self.correctPositivePredictions -= (
                 self.predictions[self.totalObservedInstances % self.windowSize]
                 if self.window[self.totalObservedInstances % self.windowSize] == 1
@@ -45,6 +58,9 @@ class Evaluator:
         self.predictions[self.totalObservedInstances % self.windowSize] = (
             1 if prediction == y else 0
         )
+        self.prediction_value[
+            self.totalObservedInstances % self.windowSize
+        ] = prediction
         self.window[self.totalObservedInstances % self.windowSize] = y_index
         if y_index == 1:
             self.correctPositivePredictions += 1 if prediction == y else 0
