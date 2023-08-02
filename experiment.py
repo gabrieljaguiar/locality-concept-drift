@@ -1,7 +1,8 @@
 from river.datasets.base import SyntheticDataset
 from river.base import DriftDetector, Classifier
 from evaluators.multi_class_evaluator import MultiClassEvaluator
-from river.drift import ADWIN
+import pandas as pd
+from tqdm import tqdm
 
 # add class imbalance monitoring
 
@@ -36,11 +37,11 @@ class Experiment:
         for i, (x, y) in enumerate(self.stream.take(self.size)):
             if i > self.gracePeriod:
                 self.updateDriftDetector(y, self.model.predict_one(x))
+                self.evaluator.addResult((x, y), self.model.predict_proba_one(x))
                 if self.driftDetctor.drift_detected:
                     drift_detected += 1
 
                 if (i + 1) % self.evaluationWindow == 0:
-                    print(i + 1)
                     metric = {"idx": i + 1, "G-Mean": self.evaluator.getGMean()}
 
                     for c in range(0, self.stream.n_classes):
@@ -54,5 +55,5 @@ class Experiment:
 
             self.model.learn_one(x, y)
 
-    def saveExp():
-        pass
+    def save(self):
+        pd.DataFrame(self.metrics).to_csv("{}/{}.csv".format(self.savePath, self.name))

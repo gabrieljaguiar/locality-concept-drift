@@ -54,7 +54,11 @@ class MultiClassImbalancedStream(datasets.base.SyntheticDataset):
         self._rng = random.Random(self.seed)
         self.n_classes = self.generator.n_classes
 
-        assert sum(self.imbalanceRatio) == 1, "Sum of probabilities must be 1"
+        assert (
+            round(sum(self.imbalanceRatio), 5) == 1
+        ), "Sum of probabilities must be 1 - {}".format(
+            round(sum(self.imbalanceRatio), 5)
+        )
         assert self.n_classes == len(
             self.imbalanceRatio
         ), "Generator number of classes and probability list should have the same size"

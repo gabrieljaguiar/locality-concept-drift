@@ -10,7 +10,6 @@ class MultiClassDrift(datasets.base.SyntheticDataset):
         self.stream = stream
         self.driftKey = driftKey
         self.n_classes = self.stream.n_classes
-        self.streamIterator = iter(self.stream)
 
         super().__init__(
             self.stream.task,
@@ -26,6 +25,7 @@ class MultiClassDrift(datasets.base.SyntheticDataset):
                 self.driftKey[i] = i
 
     def __iter__(self):
+        self.streamIterator = iter(self.stream)
         while True:
             x, y = next(self.streamIterator)
             yield x, self.driftKey.get(y)
