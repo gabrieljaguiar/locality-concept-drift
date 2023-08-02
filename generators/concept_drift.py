@@ -85,7 +85,7 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
         super().__init__(
             self.initialStream.task,
             self.initialStream.n_features,
-            self.initialStream.n_samples,
+            self.size,
             self.initialStream.n_classes,
             self.initialStream.n_outputs,
         )

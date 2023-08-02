@@ -1,10 +1,10 @@
-from river import ensemble, preprocessing, tree
+from river import ensemble, preprocessing, tree, drift
 from river.datasets.synth import RandomRBF
 from generators.concept_drift import ConceptDriftStream
 from generators.multi_class_drift import MultiClassDrift
 from evaluators.multi_class_evaluator import MultiClassEvaluator
 from generators.imbalance_generators import MultiClassImbalancedStream
-
+from experiment import Experiment
 
 model = ensemble.LeveragingBaggingClassifier(
     model=(preprocessing.StandardScaler() | tree.HoeffdingTreeClassifier()),
@@ -25,15 +25,7 @@ stream = ConceptDriftStream(
     size=100000,
 )
 
-evaluator = MultiClassEvaluator(500, 5)
 
-for i, (x, y) in enumerate(stream.take(100000)):
-    if i > 200:
-        evaluator.addResult((x, y), model.predict_proba_one(x))
-    # print(y)
-    model.learn_one(x, y)
+exp = Experiment("example", "exp_output/", model, drift.binary.DDM(), stream)
 
-    if (i + 1) % 500 == 0:
-        print("{} - {}".format(i, evaluator.getGMean()))
-        print("{} - {}".format(i, evaluator.getClassRecall(classIdx=3)))
-        print("{} - {}".format(i, evaluator.getClassRecall(classIdx=4)))
+exp.run()
