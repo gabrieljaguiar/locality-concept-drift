@@ -42,10 +42,14 @@ class Experiment:
                     drift_detected += 1
 
                 if (i + 1) % self.evaluationWindow == 0:
-                    metric = {"idx": i + 1, "G-Mean": self.evaluator.getGMean()}
+                    metric = {
+                        "idx": i + 1,
+                        "accuracy": self.evaluator.getAccuracy(),
+                        "gmean": self.evaluator.getGMean(),
+                    }
 
                     for c in range(0, self.stream.n_classes):
-                        metric["class-{}".format(c)] = self.evaluator.getClassRecall(c)
+                        metric["class_{}".format(c)] = self.evaluator.getClassRecall(c)
 
                     metric["drifts_alerts"] = drift_detected
 

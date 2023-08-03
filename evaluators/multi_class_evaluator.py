@@ -21,5 +21,4 @@ class MultiClassEvaluator(Evaluator):
         for i in range(0, self.numberOfClasses):
             gmean *= self.getClassRecall(classIdx=i)
 
-        print(self.cm)
         return math.pow(gmean, 1 / self.numberOfClasses)

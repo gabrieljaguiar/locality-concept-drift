@@ -14,14 +14,13 @@ for (c in classifiers) {
   }
 }
 
-data <- read.csv("../exp_output/LB_ADWIN_stable_rt_10.csv")
+data <- read.csv("../exp_output/LB_ADWIN_stable_rt_5.csv")
 
-data <- data[, -1]
-data_melt <- data[, 1:7]
+data <- data[, 2:(ncol(data) - 1)]
 
-data_melt <- melt(data_melt, id.vars = c("idx"))
-
-data_melt <- data_melt[data_melt$variable!= "G.Mean",]
+data_melt <- melt(data, id.vars = c("idx"))
+data_melt$local <- "local"
+data_melt[data_melt$variable=="G.Mean",]$local <- "global"
 
 ggplot(data_melt, aes(x=idx, y=value)) + 
   geom_line(aes(color=variable)) + 
@@ -30,4 +29,5 @@ ggplot(data_melt, aes(x=idx, y=value)) +
     panel.grid.major.x = element_blank(),
     panel.grid.minor.x = element_blank()
   ) +
-  geom_vline(xintercept = c(30000, 60000), color="black", alpha=0.8, linetype=3)
+  geom_vline(xintercept = c(30000, 60000), color="black", alpha=0.8, linetype=3) +
+  facet_grid(.~local)
