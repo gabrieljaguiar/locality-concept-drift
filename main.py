@@ -27,8 +27,8 @@ models = [
 ]
 
 dds = [
-    # ("ADWIN", drift.ADWIN()),
-    # ("DDM", drift.binary.DDM()),
+    ("ADWIN", drift.ADWIN()),
+    ("DDM", drift.binary.DDM()),
     ("RDDM", RDDM_M()),
 ]
 
@@ -53,7 +53,7 @@ def task(stream, model, dd):
 
 
 for model in models:
-    out = Parallel(n_jobs=4)(
+    out = Parallel(n_jobs=8)(
         delayed(task)(stream, model, dd)
         for stream, dd in itertools.product(streams, dds)
     )

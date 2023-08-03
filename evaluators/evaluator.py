@@ -29,9 +29,9 @@ class Evaluator:
             for i in range(self.numberOfClasses)
         ]
         pred_index = classVotes.index(max(classVotes))
-        y_index = list(probabilties.keys()).index(y)
+        y_index = sorted(list(probabilties.keys())).index(y)
 
-        prediction = list(probabilties.keys())[pred_index]
+        prediction = sorted(list(probabilties.keys()))[pred_index]
 
         if self.totalObservedInstances > self.windowSize:
             class_to_be_removed = self.window[
@@ -60,7 +60,7 @@ class Evaluator:
         )
         self.prediction_value[
             self.totalObservedInstances % self.windowSize
-        ] = prediction
+        ] = pred_index
         self.window[self.totalObservedInstances % self.windowSize] = y_index
         if y_index == 1:
             self.correctPositivePredictions += 1 if prediction == y else 0
@@ -100,35 +100,3 @@ class Evaluator:
             posAccuracy = 0
 
         return math.sqrt(posAccuracy * negAccuracy)
-
-
-if __name__ == "__main__":
-    from river.tree import HoeffdingTreeClassifier
-    import concept_drift
-
-    windowsize = 500
-    evaluator = Evaluator(windowSize=windowsize)
-
-    stream1 = synth.Agrawal(classification_function=0, seed=42)
-    stream2 = synth.Agrawal(classification_function=8, seed=42)
-
-    conceptDriftStream = concept_drift.ConceptDriftStream(
-        stream1, stream2, width=1, position=4000, angle=0
-    )
-
-    model = HoeffdingTreeClassifier(
-        grace_period=100, delta=1e-5, nominal_attributes=["elevel", "car", "zipcode"]
-    )
-
-    idx = 0
-
-    for x, y in conceptDriftStream.take(200):
-        model.learn_one(x, y)
-
-    for x, y in conceptDriftStream.take(6000):
-        idx += 1
-        y_hat = model.predict_proba_one(x)
-        evaluator.addResult((x, y), y_hat)
-        model.learn_one(x, y)
-        if idx % windowsize == 0:
-            print("Accuracy {}: {}%".format(idx, evaluator.getAccuracy()))

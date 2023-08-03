@@ -149,7 +149,7 @@ stable_rt_10 = ConceptDriftStream(
                     n_num_features=10,
                     n_classes=10,
                 ),
-                {0: 1, 1: 0, 2: 2, 3: 3, 4: 4, 5: 5, 6: 9, 7: 7, 8: 6, 9: 8},
+                {0: 0, 1: 1, 2: 3, 3: 2, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9},
             ),
             [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
         ),
@@ -165,7 +165,7 @@ stable_rt_10 = ConceptDriftStream(
 
 streams = [
     ("stable_rf_5", stable_rf_5),
-    ("stable_rf_10", stable_rf_5),
+    ("stable_rf_10", stable_rf_10),
     ("stable_rt_5", stable_rt_5),
     ("stable_rt_10", stable_rt_10),
 ]
