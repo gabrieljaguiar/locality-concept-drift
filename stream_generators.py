@@ -13,8 +13,8 @@ SIZE = 100000
 
 
 def switch_classes(no_switch_dict: dict):
-    class_1 = _rng.randint(0, len(no_switch_dict) - 1)
-    class_2 = _rng.randint(0, len(no_switch_dict) - 1)
+    class_1 = _rng.randint(1, len(no_switch_dict) - 1)
+    class_2 = _rng.randint(1, len(no_switch_dict) - 1)
 
     while class_2 == class_1:
         class_2 = _rng.randint(0, len(no_switch_dict) - 1)
@@ -253,9 +253,181 @@ imbalance_switching_rf_5_gradual = ConceptDriftStream(
 )
 
 
+no_imbalance_switching_rt_5_sudden = ConceptDriftStream(
+    MultiClassImbalancedStream(RandomTree(42, 42, 5, 10, 5), no_class_imbalance_5),
+    ConceptDriftStream(
+        MultiClassImbalancedStream(
+            MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[1]),
+            no_class_imbalance_5,
+        ),
+        ConceptDriftStream(
+            MultiClassImbalancedStream(
+                MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[2]),
+                no_class_imbalance_5,
+            ),
+            ConceptDriftStream(
+                MultiClassImbalancedStream(
+                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[3]),
+                    no_class_imbalance_5,
+                ),
+                MultiClassImbalancedStream(
+                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[4]),
+                    no_class_imbalance_5,
+                ),
+                width=1,
+                position=SIZE / 5,
+                size=SIZE,
+            ),
+            width=1,
+            position=SIZE / 5,
+            size=SIZE,
+        ),
+        width=1,
+        position=SIZE / 5,
+        size=SIZE,
+    ),
+    width=1,
+    position=SIZE / 5,
+    size=SIZE,
+)
+
+
+imbalance_switching_rt_5_sudden = ConceptDriftStream(
+    MultiClassImbalancedStream(RandomTree(42, 42, 5, 10, 5), fixed_imbalance_5),
+    ConceptDriftStream(
+        MultiClassImbalancedStream(
+            MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[1]),
+            fixed_imbalance_5,
+        ),
+        ConceptDriftStream(
+            MultiClassImbalancedStream(
+                MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[2]),
+                fixed_imbalance_5,
+            ),
+            ConceptDriftStream(
+                MultiClassImbalancedStream(
+                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[3]),
+                    fixed_imbalance_5,
+                ),
+                MultiClassImbalancedStream(
+                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[4]),
+                    fixed_imbalance_5,
+                ),
+                width=1,
+                position=SIZE / 5,
+                size=SIZE,
+            ),
+            width=1,
+            position=SIZE / 5,
+            size=SIZE,
+        ),
+        width=1,
+        position=SIZE / 5,
+        size=SIZE,
+    ),
+    width=1,
+    position=SIZE / 5,
+    size=SIZE,
+)
+
+
+no_imbalance_switching_rt_5_gradual = ConceptDriftStream(
+    MultiClassImbalancedStream(RandomTree(42, 42, 5, 10, 5), no_class_imbalance_5),
+    ConceptDriftStream(
+        MultiClassImbalancedStream(
+            MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[1]),
+            no_class_imbalance_5,
+        ),
+        ConceptDriftStream(
+            MultiClassImbalancedStream(
+                MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[2]),
+                no_class_imbalance_5,
+            ),
+            ConceptDriftStream(
+                MultiClassImbalancedStream(
+                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[3]),
+                    no_class_imbalance_5,
+                ),
+                MultiClassImbalancedStream(
+                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[4]),
+                    no_class_imbalance_5,
+                ),
+                width=500,
+                position=SIZE / 5,
+                size=SIZE,
+            ),
+            width=500,
+            position=SIZE / 5,
+            size=SIZE,
+        ),
+        width=500,
+        position=SIZE / 5,
+        size=SIZE,
+    ),
+    width=500,
+    position=SIZE / 5,
+    size=SIZE,
+)
+
+
+imbalance_switching_rt_5_gradual = ConceptDriftStream(
+    MultiClassImbalancedStream(RandomTree(42, 42, 5, 10, 5), fixed_imbalance_5),
+    ConceptDriftStream(
+        MultiClassImbalancedStream(
+            MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[1]),
+            fixed_imbalance_5,
+        ),
+        ConceptDriftStream(
+            MultiClassImbalancedStream(
+                MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[2]),
+                fixed_imbalance_5,
+            ),
+            ConceptDriftStream(
+                MultiClassImbalancedStream(
+                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[3]),
+                    fixed_imbalance_5,
+                ),
+                MultiClassImbalancedStream(
+                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[4]),
+                    fixed_imbalance_5,
+                ),
+                width=500,
+                position=SIZE / 5,
+                size=SIZE,
+            ),
+            width=500,
+            position=SIZE / 5,
+            size=SIZE,
+        ),
+        width=500,
+        position=SIZE / 5,
+        size=SIZE,
+    ),
+    width=500,
+    position=SIZE / 5,
+    size=SIZE,
+)
+
+
 streams = [
-    ("no_imbalance_switching_rf_5_sudden", no_imbalance_switching_rf_5_sudden),
-    ("no_imbalance_switching_rf_5_gradual", no_imbalance_switching_rf_5_gradual),
-    ("imbalance_switching_rf_5_sudden", imbalance_switching_rf_5_sudden),
-    ("imbalance_switching_rf_5_gradual", imbalance_switching_rf_5_gradual),
+    (
+        "no_imbalance_switching_rf_5_sudden_fix_majority",
+        no_imbalance_switching_rf_5_sudden,
+    ),
+    (
+        "no_imbalance_switching_rf_5_gradual_fix_majority",
+        no_imbalance_switching_rf_5_gradual,
+    ),
+    ("imbalance_switching_rf_5_sudden_fix_majority", imbalance_switching_rf_5_sudden),
+    ("imbalance_switching_rf_5_gradual_fix_majority", imbalance_switching_rf_5_gradual),
+    (
+        "no_imbalance_switching_rt_5_sudden_fix_majority",
+        no_imbalance_switching_rt_5_sudden,
+    ),
+    (
+        "no_imbalance_switching_rt_5_gradual_fix_majority",
+        no_imbalance_switching_rt_5_gradual,
+    ),
+    ("imbalance_switching_rt_5_sudden_fix_majority", imbalance_switching_rt_5_sudden),
+    ("imbalance_switching_rt_5_gradual_fix_majority", imbalance_switching_rt_5_gradual),
 ]

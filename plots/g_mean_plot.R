@@ -40,7 +40,7 @@ for (c in classifiers) {
     facet_grid(stream~local) +
     ggtitle(c)
   
-  ggsave(paste0(c,".pdf"), g, width = 11)
+  ggsave(paste0(c,".pdf"), g, width = 11, height = 9)
 }
 g
 
