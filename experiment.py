@@ -16,6 +16,7 @@ class Experiment:
         driftDetector: DriftDetector,
         stream: SyntheticDataset,
         evaluationWindow: int = 500,
+        theta: float = 0.99,
     ) -> None:
         self.name = name
         self.savePath = savePath
@@ -26,6 +27,8 @@ class Experiment:
         self.evaluator = MultiClassEvaluator(evaluationWindow, self.stream.n_classes)
         self.evaluationWindow = evaluationWindow
         self.gracePeriod = 200
+        self.theta = theta
+        self.classProportions = [0] * self.stream.n_classes
 
     def updateDriftDetector(self, y, y_hat):  # DDM
         x = 1 if (y == y_hat) else 0
@@ -50,12 +53,17 @@ class Experiment:
 
                     for c in range(0, self.stream.n_classes):
                         metric["class_{}".format(c)] = self.evaluator.getClassRecall(c)
+                        metric["class_prop_{}".format(c)] = self.classProportions[c]
 
                     metric["drifts_alerts"] = drift_detected
 
                     self.metrics.append(metric)
 
                     drift_detected = 0
+            for j in range(0, len(self.classProportions)):
+                self.classProportions[j] = self.theta * self.classProportions[j] + (
+                    1.0 - self.theta
+                ) * (1 if y == j else 0)
 
             self.model.learn_one(x, y)
 
