@@ -23,7 +23,7 @@ models = [
         ),
     ),
     ("HT", ensemble.LeveragingBaggingClassifier(tree.HoeffdingTreeClassifier())),
-    ("NB", naive_bayes.GaussianNB()),
+    # ("NB", naive_bayes.GaussianNB()),
 ]
 
 dds = [

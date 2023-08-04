@@ -3,6 +3,7 @@ from river.base import DriftDetector, Classifier
 from evaluators.multi_class_evaluator import MultiClassEvaluator
 import pandas as pd
 from tqdm import tqdm
+from drift_detectors import DDM_OCI
 
 # add class imbalance monitoring
 
@@ -28,11 +29,16 @@ class Experiment:
         self.evaluationWindow = evaluationWindow
         self.gracePeriod = 200
         self.theta = theta
-        self.classProportions = [0] * self.stream.n_classes
+        self.classProportions: list = [0] * self.stream.n_classes
 
     def updateDriftDetector(self, y, y_hat):  # DDM
         x = 1 if (y == y_hat) else 0
-        self.driftDetctor.update(x)
+        if (type(self.driftDetctor) == DDM_OCI) and (
+            y == self.classProportions.index(min(self.classProportions))
+        ):
+            self.driftDetctor.update(x)
+        else:
+            self.driftDetctor.update(x)
 
     def run(self):
         self.metrics = []
