@@ -771,4 +771,4 @@ streams_10 = [
     ),
 ]
 
-streams = streams_10
+streams = streams_5 + streams_10

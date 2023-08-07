@@ -12,6 +12,7 @@ from drift_detectors import RDDM_M
 from frouros.detectors.concept_drift.streaming.statistical_process_control.rddm import (
     RDDM,
 )
+from drift_detectors import DDM_OCI, MCADWIN
 
 models = [
     (
@@ -27,9 +28,11 @@ models = [
 ]
 
 dds = [
-    ("ADWIN", drift.ADWIN()),
-    ("DDM", drift.binary.DDM()),
-    ("RDDM", RDDM_M()),
+    # ("ADWIN", drift.ADWIN()),
+    # ("DDM", drift.binary.DDM()),
+    # ("RDDM", RDDM_M()),
+    ("MCADWIN", MCADWIN()),
+    ("DDM_OCI", DDM_OCI()),
 ]
 
 
@@ -37,6 +40,8 @@ def task(stream, model, dd):
     stream_name, stream = stream
     model_name, model = model
     dd_name, dd = dd
+    if type(dd) == MCADWIN:
+        dd = MCADWIN(n_classes=stream.n_classes)
     exp_name = "{}_{}_{}".format(model_name, dd_name, stream_name)
     print("Running {}...".format(exp_name))
     exp = Experiment(
