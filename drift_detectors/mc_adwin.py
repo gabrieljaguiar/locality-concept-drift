@@ -8,7 +8,9 @@ from typing import List
 class MCADWIN(DriftDetector):
     def __init__(self, n_classes=2):
         self.n_classes: int = n_classes
-        self.drift_detectors: List[DriftDetector] = [ADWIN()] * self.n_classes
+        self.drift_detectors: List[DriftDetector] = [
+            ADWIN() for i in range(self.n_classes)
+        ]
         self.classProportions: List[float] = [0] * self.n_classes
         self.theta: float = 0.99
         self.drift_threshold: float = 0.5
@@ -29,5 +31,5 @@ class MCADWIN(DriftDetector):
                 drift_detection[j] = 1
                 self.local_drift = True
 
-        if sum(drift_detection) / len(drift_detection) > self.drift_threshold:
+        if (sum(drift_detection) / len(drift_detection)) > self.drift_threshold:
             self._drift_detected = True
