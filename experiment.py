@@ -68,6 +68,7 @@ class Experiment:
                         metric["class_prop_{}".format(c)] = self.classProportions[c]
 
                     metric["drifts_alerts"] = drift_detected
+                    metric["local_alerts"] = local_drift
 
                     self.metrics.append(metric)
 

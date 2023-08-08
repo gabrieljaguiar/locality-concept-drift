@@ -32,7 +32,7 @@ dds = [
     # ("DDM", drift.binary.DDM()),
     # ("RDDM", RDDM_M()),
     ("MCADWIN", MCADWIN()),
-    ("DDM_OCI", DDM_OCI()),
+    # ("DDM_OCI", DDM_OCI()),
 ]
 
 
@@ -58,7 +58,7 @@ def task(stream, model, dd):
 
 
 for model in models:
-    out = Parallel(n_jobs=8)(
+    out = Parallel(n_jobs=12)(
         delayed(task)(stream, model, dd)
         for stream, dd in itertools.product(streams, dds)
     )
