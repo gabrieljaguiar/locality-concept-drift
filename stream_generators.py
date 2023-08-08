@@ -96,26 +96,26 @@ for i in range(1, 5):
 #    [1, 2, 3, 4, 0],
 # )
 
-
+## RBF ##
 no_imbalance_switching_rf_5_sudden = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomRBF(42, 42, 5, 20, 50), no_class_imbalance_5),
+    MultiClassImbalancedStream(RandomRBF(42, 42, 5, 2, 20), no_class_imbalance_5),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[1]),
+            MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[1]),
             no_class_imbalance_5,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[2]),
+                MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[2]),
                 no_class_imbalance_5,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[3]),
+                    MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[3]),
                     no_class_imbalance_5,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[4]),
+                    MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[4]),
                     no_class_imbalance_5,
                 ),
                 width=1,
@@ -137,24 +137,24 @@ no_imbalance_switching_rf_5_sudden = ConceptDriftStream(
 
 
 imbalance_switching_rf_5_sudden = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomRBF(42, 42, 5, 20, 50), fixed_imbalance_5),
+    MultiClassImbalancedStream(RandomRBF(42, 42, 5, 2, 20), fixed_imbalance_5),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[1]),
+            MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[1]),
             fixed_imbalance_5,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[2]),
+                MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[2]),
                 fixed_imbalance_5,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[3]),
+                    MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[3]),
                     fixed_imbalance_5,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[4]),
+                    MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[4]),
                     fixed_imbalance_5,
                 ),
                 width=1,
@@ -176,24 +176,24 @@ imbalance_switching_rf_5_sudden = ConceptDriftStream(
 
 
 no_imbalance_switching_rf_5_gradual = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomRBF(42, 42, 5, 20, 50), no_class_imbalance_5),
+    MultiClassImbalancedStream(RandomRBF(42, 42, 5, 2, 20), no_class_imbalance_5),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[1]),
+            MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[1]),
             no_class_imbalance_5,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[2]),
+                MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[2]),
                 no_class_imbalance_5,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[3]),
+                    MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[3]),
                     no_class_imbalance_5,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[4]),
+                    MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[4]),
                     no_class_imbalance_5,
                 ),
                 width=500,
@@ -215,24 +215,24 @@ no_imbalance_switching_rf_5_gradual = ConceptDriftStream(
 
 
 imbalance_switching_rf_5_gradual = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomRBF(42, 42, 5, 20, 50), fixed_imbalance_5),
+    MultiClassImbalancedStream(RandomRBF(42, 42, 5, 2, 20), fixed_imbalance_5),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[1]),
+            MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[1]),
             fixed_imbalance_5,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[2]),
+                MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[2]),
                 fixed_imbalance_5,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[3]),
+                    MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[3]),
                     fixed_imbalance_5,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 5, 20, 50), class_switch_5[4]),
+                    MultiClassDrift(RandomRBF(42, 42, 5, 2, 20), class_switch_5[4]),
                     fixed_imbalance_5,
                 ),
                 width=500,
@@ -252,26 +252,26 @@ imbalance_switching_rf_5_gradual = ConceptDriftStream(
     size=SIZE,
 )
 
-
+## RT ##
 no_imbalance_switching_rt_5_sudden = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomTree(42, 42, 5, 10, 5), no_class_imbalance_5),
+    MultiClassImbalancedStream(RandomTree(42, 42, 5, 2, 0), no_class_imbalance_5),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[1]),
+            MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[1]),
             no_class_imbalance_5,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[2]),
+                MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[2]),
                 no_class_imbalance_5,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[3]),
+                    MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[3]),
                     no_class_imbalance_5,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[4]),
+                    MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[4]),
                     no_class_imbalance_5,
                 ),
                 width=1,
@@ -293,24 +293,24 @@ no_imbalance_switching_rt_5_sudden = ConceptDriftStream(
 
 
 imbalance_switching_rt_5_sudden = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomTree(42, 42, 5, 10, 5), fixed_imbalance_5),
+    MultiClassImbalancedStream(RandomTree(42, 42, 5, 2, 0), fixed_imbalance_5),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[1]),
+            MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[1]),
             fixed_imbalance_5,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[2]),
+                MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[2]),
                 fixed_imbalance_5,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[3]),
+                    MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[3]),
                     fixed_imbalance_5,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[4]),
+                    MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[4]),
                     fixed_imbalance_5,
                 ),
                 width=1,
@@ -332,24 +332,24 @@ imbalance_switching_rt_5_sudden = ConceptDriftStream(
 
 
 no_imbalance_switching_rt_5_gradual = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomTree(42, 42, 5, 10, 5), no_class_imbalance_5),
+    MultiClassImbalancedStream(RandomTree(42, 42, 5, 2, 0), no_class_imbalance_5),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[1]),
+            MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[1]),
             no_class_imbalance_5,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[2]),
+                MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[2]),
                 no_class_imbalance_5,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[3]),
+                    MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[3]),
                     no_class_imbalance_5,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[4]),
+                    MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[4]),
                     no_class_imbalance_5,
                 ),
                 width=500,
@@ -371,24 +371,24 @@ no_imbalance_switching_rt_5_gradual = ConceptDriftStream(
 
 
 imbalance_switching_rt_5_gradual = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomTree(42, 42, 5, 10, 5), fixed_imbalance_5),
+    MultiClassImbalancedStream(RandomTree(42, 42, 5, 2, 0), fixed_imbalance_5),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[1]),
+            MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[1]),
             fixed_imbalance_5,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[2]),
+                MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[2]),
                 fixed_imbalance_5,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[3]),
+                    MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[3]),
                     fixed_imbalance_5,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 5, 10, 5), class_switch_5[4]),
+                    MultiClassDrift(RandomTree(42, 42, 5, 2, 0), class_switch_5[4]),
                     fixed_imbalance_5,
                 ),
                 width=500,
@@ -409,25 +409,26 @@ imbalance_switching_rt_5_gradual = ConceptDriftStream(
 )
 
 
+## RBF ##
 no_imbalance_switching_rf_10_sudden = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomRBF(42, 42, 10, 20, 50), no_class_imbalance_10),
+    MultiClassImbalancedStream(RandomRBF(42, 42, 10, 2, 20), no_class_imbalance_10),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[1]),
+            MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[1]),
             no_class_imbalance_10,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[2]),
+                MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[2]),
                 no_class_imbalance_10,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[3]),
+                    MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[3]),
                     no_class_imbalance_10,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[4]),
+                    MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[4]),
                     no_class_imbalance_10,
                 ),
                 width=1,
@@ -449,24 +450,24 @@ no_imbalance_switching_rf_10_sudden = ConceptDriftStream(
 
 
 imbalance_switching_rf_10_sudden = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomRBF(42, 42, 10, 20, 50), fixed_imbalance_10),
+    MultiClassImbalancedStream(RandomRBF(42, 42, 10, 2, 20), fixed_imbalance_10),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[1]),
+            MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[1]),
             fixed_imbalance_10,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[2]),
+                MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[2]),
                 fixed_imbalance_10,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[3]),
+                    MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[3]),
                     fixed_imbalance_10,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[4]),
+                    MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[4]),
                     fixed_imbalance_10,
                 ),
                 width=1,
@@ -488,24 +489,24 @@ imbalance_switching_rf_10_sudden = ConceptDriftStream(
 
 
 no_imbalance_switching_rf_10_gradual = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomRBF(42, 42, 10, 20, 50), no_class_imbalance_10),
+    MultiClassImbalancedStream(RandomRBF(42, 42, 10, 2, 20), no_class_imbalance_10),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[1]),
+            MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[1]),
             no_class_imbalance_10,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[2]),
+                MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[2]),
                 no_class_imbalance_10,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[3]),
+                    MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[3]),
                     no_class_imbalance_10,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[4]),
+                    MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[4]),
                     no_class_imbalance_10,
                 ),
                 width=500,
@@ -527,24 +528,24 @@ no_imbalance_switching_rf_10_gradual = ConceptDriftStream(
 
 
 imbalance_switching_rf_10_gradual = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomRBF(42, 42, 10, 20, 50), fixed_imbalance_10),
+    MultiClassImbalancedStream(RandomRBF(42, 42, 10, 2, 20), fixed_imbalance_10),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[1]),
+            MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[1]),
             fixed_imbalance_10,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[2]),
+                MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[2]),
                 fixed_imbalance_10,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[3]),
+                    MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[3]),
                     fixed_imbalance_10,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomRBF(42, 42, 10, 20, 50), class_switch_10[4]),
+                    MultiClassDrift(RandomRBF(42, 42, 10, 2, 20), class_switch_10[4]),
                     fixed_imbalance_10,
                 ),
                 width=500,
@@ -564,26 +565,26 @@ imbalance_switching_rf_10_gradual = ConceptDriftStream(
     size=SIZE,
 )
 
-
+## RT ##
 no_imbalance_switching_rt_10_sudden = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomTree(42, 42, 10, 10, 5), no_class_imbalance_10),
+    MultiClassImbalancedStream(RandomTree(42, 42, 10, 2, 0), no_class_imbalance_10),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[1]),
+            MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[1]),
             no_class_imbalance_10,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[2]),
+                MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[2]),
                 no_class_imbalance_10,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[3]),
+                    MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[3]),
                     no_class_imbalance_10,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[4]),
+                    MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[4]),
                     no_class_imbalance_10,
                 ),
                 width=1,
@@ -605,24 +606,24 @@ no_imbalance_switching_rt_10_sudden = ConceptDriftStream(
 
 
 imbalance_switching_rt_10_sudden = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomTree(42, 42, 10, 10, 5), fixed_imbalance_10),
+    MultiClassImbalancedStream(RandomTree(42, 42, 10, 2, 0), fixed_imbalance_10),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[1]),
+            MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[1]),
             fixed_imbalance_10,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[2]),
+                MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[2]),
                 fixed_imbalance_10,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[3]),
+                    MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[3]),
                     fixed_imbalance_10,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[4]),
+                    MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[4]),
                     fixed_imbalance_10,
                 ),
                 width=1,
@@ -644,24 +645,24 @@ imbalance_switching_rt_10_sudden = ConceptDriftStream(
 
 
 no_imbalance_switching_rt_10_gradual = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomTree(42, 42, 10, 10, 5), no_class_imbalance_10),
+    MultiClassImbalancedStream(RandomTree(42, 42, 10, 2, 0), no_class_imbalance_10),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[1]),
+            MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[1]),
             no_class_imbalance_10,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[2]),
+                MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[2]),
                 no_class_imbalance_10,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[3]),
+                    MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[3]),
                     no_class_imbalance_10,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[4]),
+                    MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[4]),
                     no_class_imbalance_10,
                 ),
                 width=500,
@@ -683,24 +684,24 @@ no_imbalance_switching_rt_10_gradual = ConceptDriftStream(
 
 
 imbalance_switching_rt_10_gradual = ConceptDriftStream(
-    MultiClassImbalancedStream(RandomTree(42, 42, 10, 10, 5), fixed_imbalance_10),
+    MultiClassImbalancedStream(RandomTree(42, 42, 10, 2, 0), fixed_imbalance_10),
     ConceptDriftStream(
         MultiClassImbalancedStream(
-            MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[1]),
+            MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[1]),
             fixed_imbalance_10,
         ),
         ConceptDriftStream(
             MultiClassImbalancedStream(
-                MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[2]),
+                MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[2]),
                 fixed_imbalance_10,
             ),
             ConceptDriftStream(
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[3]),
+                    MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[3]),
                     fixed_imbalance_10,
                 ),
                 MultiClassImbalancedStream(
-                    MultiClassDrift(RandomTree(42, 42, 10, 10, 5), class_switch_10[4]),
+                    MultiClassDrift(RandomTree(42, 42, 10, 2, 0), class_switch_10[4]),
                     fixed_imbalance_10,
                 ),
                 width=500,
@@ -722,53 +723,67 @@ imbalance_switching_rt_10_gradual = ConceptDriftStream(
 
 streams_5 = [
     (
-        "no_imbalance_switching_rf_5_sudden_fix_majority",
+        "no_imbalance_switching_rf_5_sudden",
         no_imbalance_switching_rf_5_sudden,
     ),
     (
-        "no_imbalance_switching_rf_5_gradual_fix_majority",
+        "no_imbalance_switching_rf_5_gradual",
         no_imbalance_switching_rf_5_gradual,
     ),
-    ("imbalance_switching_rf_5_sudden_fix_majority", imbalance_switching_rf_5_sudden),
-    ("imbalance_switching_rf_5_gradual_fix_majority", imbalance_switching_rf_5_gradual),
+    ("imbalance_switching_rf_5_sudden", imbalance_switching_rf_5_sudden),
+    ("imbalance_switching_rf_5_gradual", imbalance_switching_rf_5_gradual),
     (
-        "no_imbalance_switching_rt_5_sudden_fix_majority",
+        "no_imbalance_switching_rt_5_sudden",
         no_imbalance_switching_rt_5_sudden,
     ),
     (
-        "no_imbalance_switching_rt_5_gradual_fix_majority",
+        "no_imbalance_switching_rt_5_gradual",
         no_imbalance_switching_rt_5_gradual,
     ),
-    ("imbalance_switching_rt_5_sudden_fix_majority", imbalance_switching_rt_5_sudden),
-    ("imbalance_switching_rt_5_gradual_fix_majority", imbalance_switching_rt_5_gradual),
+    ("imbalance_switching_rt_5_sudden", imbalance_switching_rt_5_sudden),
+    ("imbalance_switching_rt_5_gradual", imbalance_switching_rt_5_gradual),
 ]
 streams_10 = [
     (
-        "no_imbalance_switching_rf_10_sudden_fix_majority",
+        "no_imbalance_switching_rf_10_sudden",
         no_imbalance_switching_rf_10_sudden,
     ),
     (
-        "no_imbalance_switching_rf_10_gradual_fix_majority",
+        "no_imbalance_switching_rf_10_gradual",
         no_imbalance_switching_rf_10_gradual,
     ),
-    ("imbalance_switching_rf_10_sudden_fix_majority", imbalance_switching_rf_10_sudden),
+    ("imbalance_switching_rf_10_sudden", imbalance_switching_rf_10_sudden),
     (
-        "imbalance_switching_rf_10_gradual_fix_majority",
+        "imbalance_switching_rf_10_gradual",
         imbalance_switching_rf_10_gradual,
     ),
     (
-        "no_imbalance_switching_rt_10_sudden_fix_majority",
+        "no_imbalance_switching_rt_10_sudden",
         no_imbalance_switching_rt_10_sudden,
     ),
     (
-        "no_imbalance_switching_rt_10_gradual_fix_majority",
+        "no_imbalance_switching_rt_10_gradual",
         no_imbalance_switching_rt_10_gradual,
     ),
-    ("imbalance_switching_rt_10_sudden_fix_majority", imbalance_switching_rt_10_sudden),
+    ("imbalance_switching_rt_10_sudden", imbalance_switching_rt_10_sudden),
     (
-        "imbalance_switching_rt_10_gradual_fix_majority",
+        "imbalance_switching_rt_10_gradual",
         imbalance_switching_rt_10_gradual,
     ),
 ]
 
+
 streams = streams_5 + streams_10
+
+
+def save_csv(streams):
+    name, stream = streams
+    print("{}.csv".format(name))
+    save_stream(stream, file="{}.csv".format(name), size=SIZE)
+
+
+if __name__ == "__main__":
+    from utils.csv import save_stream
+    from joblib import Parallel, delayed
+
+    out = Parallel(n_jobs=12)(delayed(save_csv)(stream) for stream in streams)
