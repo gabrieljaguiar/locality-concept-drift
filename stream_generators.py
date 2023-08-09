@@ -895,11 +895,17 @@ streams_10 = [
 streams = streams_5  # + streams_10
 
 
-stream_1 = RandomRBF(42, 42, n_classes=5, n_features=2, n_centroids=10, std_dev=0.05)
-stream_2 = RandomRBF(42, 42, n_classes=5, n_features=2, n_centroids=10, std_dev=0.05)
+stream_1 = RandomRBF(
+    42, 42, n_classes=5, n_features=3, n_centroids=10, std_dev=0.1, min_distance=0.2
+)
+stream_2 = RandomRBF(
+    42, 42, n_classes=5, n_features=3, n_centroids=10, std_dev=0.1, min_distance=0.2
+)
 stream_2.swap_clusters(2, 3)
 
-stream_3 = RandomRBF(42, 42, n_classes=5, n_features=2, n_centroids=10, std_dev=0.05)
+stream_3 = RandomRBF(
+    42, 42, n_classes=5, n_features=3, n_centroids=10, std_dev=0.1, min_distance=0.2
+)
 stream_3.swap_clusters(2, 3)
 stream_3.add_cluster(2)
 

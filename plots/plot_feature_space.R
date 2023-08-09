@@ -2,7 +2,7 @@ library(ggplot2)
 library(plotly)
 
 data <- read.csv("../random_rbf_0.5.csv")
-colnames(data) <- c("x_1", "x_2", "class")
+colnames(data) <- c("x_1", "x_2", "x_3", "class")
 
 data$class <- as.factor(data$class)
 
