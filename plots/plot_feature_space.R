@@ -1,7 +1,7 @@
 library(ggplot2)
 library(plotly)
 
-data <- read.csv("../datasets/no_imbalance_switching_rf_5_sudden.csv")
+data <- read.csv("../random_rbf_0.5.csv")
 colnames(data) <- c("x_1", "x_2", "class")
 
 data$class <- as.factor(data$class)
