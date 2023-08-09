@@ -773,7 +773,7 @@ streams_10 = [
 ]
 
 
-streams = streams_5 + streams_10
+streams = streams_5  # + streams_10
 
 
 def save_csv(streams):
@@ -786,4 +786,4 @@ if __name__ == "__main__":
     from utils.csv import save_stream
     from joblib import Parallel, delayed
 
-    out = Parallel(n_jobs=12)(delayed(save_csv)(stream) for stream in streams)
+    out = Parallel(n_jobs=8)(delayed(save_csv)(stream) for stream in streams)

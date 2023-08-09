@@ -1,12 +1,19 @@
 library (ggplot2)
 library (reshape2)
 
-classifiers = c("LB", "HT", "NB")
+classifiers = c("LB", "HT")
 dds = c("ADWIN")
-stream =  c("no_imbalance_switching_rf_5_sudden",
-    "no_imbalance_switching_rf_5_gradual",
-    "imbalance_switching_rf_5_sudden", 
-    "imbalance_switching_rf_5_gradual")
+stream_rf =  c("no_imbalance_switching_rf_10_sudden_fix_majority",
+    "no_imbalance_switching_rf_10_gradual_fix_majority",
+    "imbalance_switching_rf_10_sudden_fix_majority", 
+    "imbalance_switching_rf_10_gradual_fix_majority")
+
+stream_rt = c("no_imbalance_switching_rt_10_sudden_fix_majority",
+    "no_imbalance_switching_rt_10_gradual_fix_majority",
+    "imbalance_switching_rt_10_sudden_fix_majority", 
+    "imbalance_switching_rt_10_gradual_fix_majority")
+
+stream = stream_rf
 
 for (c in classifiers) {
   data_all_melt <- data.frame()
@@ -18,11 +25,16 @@ for (c in classifiers) {
       
       data <- data[, 2:(ncol(data) - 1)]
       
+      
+      
       data_melt <- melt(data, id.vars = c("idx"))
       data_melt$local <- "local"
+      
+      data_melt[grepl("_prop_", data_melt$variable),]$local <- "ratio"
+      data_melt$variable <- gsub("_prop_", "_", data_melt$variable)
       data_melt[data_melt$variable=="accuracy",]$local <- "global"
       data_melt[data_melt$variable=="gmean",]$local <- "global"
-      data_melt$stream <- s
+      data_melt$stream <- gsub("*.switching", "", gsub("_", ".", gsub("_fix_majority", "", s)))
       data_all_melt <- rbind(data_all_melt, data_melt)
       
 
@@ -37,10 +49,10 @@ for (c in classifiers) {
       strip.text.y = element_text(size=7)
     ) +
     geom_vline(xintercept = c(20000, 40000, 60000, 80000), color="black", alpha=0.8, linetype=3) +
-    facet_grid(stream~local) +
+    facet_grid(stream~local, scales="free_y") +
     ggtitle(c)
   
-  ggsave(paste0(c,".pdf"), g, width = 11, height = 9)
+  ggsave(paste0(c,"_fix_majority_rf_10.pdf"), g, width = 18, height = 10)
 }
 g
 
