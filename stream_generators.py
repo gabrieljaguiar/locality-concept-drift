@@ -1,6 +1,6 @@
 from river import ensemble, preprocessing, tree, drift
 from river.datasets.synth import RandomTree
-from generators import RandomRBF
+from generators import RandomRBF, RandomTreeMC, HyperplaneMC
 from generators.concept_drift import ConceptDriftStream
 from generators.multi_class_drift import MultiClassDrift
 from evaluators.multi_class_evaluator import MultiClassEvaluator
@@ -895,19 +895,30 @@ streams_10 = [
 streams = streams_5  # + streams_10
 
 
-stream_1 = RandomRBF(
-    42, 42, n_classes=5, n_features=3, n_centroids=10, std_dev=0.1, min_distance=0.2
-)
-stream_2 = RandomRBF(
-    42, 42, n_classes=5, n_features=3, n_centroids=10, std_dev=0.1, min_distance=0.2
-)
-stream_2.swap_clusters(2, 3)
+# stream_1 = RandomRBF(
+#    42, 42, n_classes=5, n_features=3, n_centroids=10, std_dev=0.1, min_distance=0.2
+# )
 
-stream_3 = RandomRBF(
-    42, 42, n_classes=5, n_features=3, n_centroids=10, std_dev=0.1, min_distance=0.2
+stream_1 = HyperplaneMC(n_classes=3, n_features=2)
+# import copy
+
+stream_2 = stream_1
+stream_3 = stream_1
+"""
+#stream_2.swap_leafs(4, 2)
+
+
+stream_3 = RandomTreeMC(
+    42,
+    48,
+    n_classes=5,
+    n_num_features=2,
+    n_cat_features=0,
+    max_tree_depth=10,
+    first_leaf_level=5,
 )
-stream_3.swap_clusters(2, 3)
-stream_3.add_cluster(2)
+"""
+
 
 drift_s = ConceptDriftStream(
     stream_1,
@@ -920,7 +931,7 @@ drift_s = ConceptDriftStream(
 
 streams = [
     (
-        "random_rbf_0.5",
+        "rt_0.5",
         drift_s,
     ),
 ]

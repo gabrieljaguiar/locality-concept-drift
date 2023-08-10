@@ -1,11 +1,11 @@
 from river.datasets.base import SyntheticDataset
+from river import datasets
 from random import Random
 
 
 class HyperplaneMC(SyntheticDataset):
     def __init__(
         self,
-        task,
         n_features,
         n_samples=None,
         n_classes=None,
@@ -13,17 +13,25 @@ class HyperplaneMC(SyntheticDataset):
         sparse=False,
         seed=42,
     ):
-        super().__init__(task, n_features, n_samples, n_classes, n_outputs, sparse)
+        super().__init__(
+            datasets.base.MULTI_CLF, n_features, n_samples, n_classes, n_outputs, sparse
+        )
         self._rng = Random(seed)
+        self.weights = [self._rng.random() for i in range(self.n_features)]
+
+    def __iter__(self):
+        while True:
+            x, y = self._generate_next_sample()
+            yield x, y
 
     def _generate_next_sample(self):
-        attVals: list[float] = [0.0] * self.n_features
+        attributes = []
         sum = 0.0
         sumWeights = 0.0
 
         for i in range(self.n_features):
-            attVals[i] = self._rng()
-            sum += self.weights[i] * attVals[i]
+            attributes.append(self._rng.random())
+            sum += self.weights[i] * attributes[i]
             sumWeights += self.weights[i]
 
         classLabel = 0
@@ -36,3 +44,5 @@ class HyperplaneMC(SyntheticDataset):
             if sumRoulette >= ratio:
                 classLabel = i
                 break
+
+        return attributes, classLabel
