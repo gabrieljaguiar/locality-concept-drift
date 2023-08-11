@@ -163,3 +163,5 @@ cython_debug/
 *.pdf
 .RData
 .R*
+
+./datasets/*.csv
