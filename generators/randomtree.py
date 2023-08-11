@@ -1,5 +1,6 @@
 from __future__ import annotations
-from river.datasets.synth import RandomTree
+from river.datasets.synth.random_tree import RandomTree, TreeNode
+
 import random
 
 
@@ -29,6 +30,25 @@ class RandomTreeMC(RandomTree):
         )
         self._generate_random_tree()
         self.leafs = self.get_leaf_nodes()
+        self._prune_tree()
+        self.leafs = self.get_leaf_nodes()
+
+    def _generate_random_tree(self):
+        """
+        Generates the random tree, starting from the root node and following
+        the constraints passed as parameters to the initializer.
+
+        The tree is recursively generated, node by node, until it reaches the
+        maximum tree depth.
+        """
+        rng_tree = random.Random(self.seed_tree)
+        candidate_features = list(range(self.n_num_features + self.n_cat_features))
+        min_numeric_values = [-1] * self.n_num_features
+        max_numeric_values = [1] * self.n_num_features
+
+        self.tree_root = self._generate_random_tree_node(
+            0, candidate_features, min_numeric_values, max_numeric_values, rng_tree
+        )
 
     def _collect_leaf_nodes(self, node, leafs):
         if node is not None:
@@ -38,6 +58,22 @@ class RandomTreeMC(RandomTree):
             for n in node.children:
                 n.parent = node
                 self._collect_leaf_nodes(n, leafs)
+
+    def _prune_tree(self, fraction: float = 0.2):
+        rng_tree = random.Random(self.seed_tree)
+        to_be_removed = rng_tree.sample(
+            population=self.leafs, k=int(fraction * len(self.leafs))
+        )
+        for leaf in to_be_removed:
+            leaf.parent.children.remove(leaf)
+
+    def create_new_node(self, class_1: int):
+        for l in self.leafs:
+            if len(l.parent.children) == 1:
+                new_leaf_node = TreeNode()
+                new_leaf_node.class_label = class_1
+                l.parent.children.append(new_leaf_node)
+        self.leafs = self.get_leaf_nodes()
 
     def get_leaf_nodes(self):
         leafs = []
@@ -65,10 +101,19 @@ class RandomTreeMC(RandomTree):
 
         # Randomly generate features, and then classify the resulting instance.
         while True:
-            x = dict()
-            for feature in self.features_num:
-                x[feature] = rng_sample.random()
-            for feature in self.features_cat:
-                x[feature] = rng_sample.randint(0, self.n_categories_per_feature - 1)
-            y = self._classify_instance(self.tree_root, x)
+            valid_instance = False
+            while not valid_instance:
+                try:
+                    x = dict()
+                    for feature in self.features_num:
+                        x[feature] = rng_sample.uniform(-1, 1)
+                    for feature in self.features_cat:
+                        x[feature] = rng_sample.randint(
+                            0, self.n_categories_per_feature - 1
+                        )
+                    y = self._classify_instance(self.tree_root, x)
+
+                    valid_instance = y is not None
+                except Exception as e:
+                    valid_instance = False
             yield x, y

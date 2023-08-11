@@ -1,3 +1,4 @@
+from __future__ import annotations
 from river.datasets.synth import RandomRBF
 from river.datasets.synth.random_rbf import Centroid, random_index_based_on_weights
 import random
@@ -57,7 +58,7 @@ class RandomRBF(RandomRBF):
             while not self._compute_nearest(rand_centre):
                 rand_centre = []
                 for j in range(self.n_num_features):
-                    rand_centre.append(self.rng_model.random())
+                    rand_centre.append(self.rng_model.uniform(-1, 1))
 
             self.centroids[i].centre = rand_centre
             self.centroids[i].class_label = classes_assinged.pop(
@@ -67,6 +68,24 @@ class RandomRBF(RandomRBF):
                 classes_assinged = [i for i in range(self.n_classes)]
             self.centroids[i].std_dev = self.std_dev
             self.centroid_weights.append(1)
+
+    def _generate_sample(self, rng_sample: random.Random):
+        idx = random_index_based_on_weights(self.centroid_weights, rng_sample)
+        current_centroid = self.centroids[idx]
+        att_vals = dict()
+        magnitude = 0.0
+        for i in range(self.n_features):
+            att_vals[i] = (rng_sample.uniform(-1, 1) * 2.0) - 1.0
+            magnitude += att_vals[i] * att_vals[i]
+        magnitude = magnitude**0.5
+        desired_mag = rng_sample.gauss(0, 1) * current_centroid.std_dev
+        scale = desired_mag / magnitude
+        x = {
+            i: current_centroid.centre[i] + att_vals[i] * scale
+            for i in range(self.n_features)
+        }
+        y = current_centroid.class_label
+        return x, y
 
     def swap_clusters(self, class_1: int, class_2: int):
         class_1_centroids = [c for c in self.centroids if c.class_label == class_1]
@@ -85,9 +104,20 @@ class RandomRBF(RandomRBF):
         while not self._compute_nearest(rand_centre):
             rand_centre = []
             for j in range(self.n_num_features):
-                rand_centre.append(self.rng_model.random())
+                rand_centre.append(self.rng_model.uniform(-1, 1))
 
         self.centroids[i].centre = rand_centre
         self.centroids[i].class_label = class_1
         self.centroids[i].std_dev = self.std_dev
         self.centroid_weights.append(1)
+
+    def shift_cluster(self, class_1: int, proportions: float = 1.0):
+        class_centroids = [c for c in self.centroids if c.class_label == class_1]
+        for i in range(int(len(class_centroids) * proportions)):
+            self.add_cluster(class_1=class_1)
+        to_be_removed_clusters = self.rng_model.sample(
+            class_centroids, k=int(len(class_centroids) * proportions)
+        )
+        for c in to_be_removed_clusters:
+            self.centroids.remove(c)
+            self.centroid_weights.remove(1)

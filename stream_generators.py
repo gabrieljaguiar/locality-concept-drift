@@ -374,11 +374,27 @@ for i in [2, 3, 5, 10]:
 
 """
 
+st_1 = RandomTreeMC(42, 42, 2, 2, 0, 0, 8, 8)
+st_2 = RandomTreeMC(42, 42, 2, 2, 0, 0, 8, 8)
+st_2.create_new_node(1)
+streams = [
+    (
+        "test_stream",
+        ConceptDriftStream(
+            st_1,
+            st_2,
+            width=1,
+            position=SIZE / 2,
+            size=SIZE,
+        ),
+    )
+]
+
 
 def save_csv(streams):
     name, stream = streams
     print("{}.csv".format(name))
-    save_stream(stream, file="datasets/no_drift/{}.csv".format(name), size=SIZE)
+    save_stream(stream, file="datasets/{}.csv".format(name), size=SIZE)
 
 
 if __name__ == "__main__":
@@ -386,4 +402,4 @@ if __name__ == "__main__":
 
     from joblib import Parallel, delayed
 
-    out = Parallel(n_jobs=8)(delayed(save_csv)(stream) for stream in streams)
+    out = Parallel(n_jobs=1)(delayed(save_csv)(stream) for stream in streams)
