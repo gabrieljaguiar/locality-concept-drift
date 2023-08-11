@@ -10,7 +10,7 @@ from random import Random
 
 
 _rng = Random(42)
-SIZE = 200000
+SIZE = 100000
 
 
 def switch_classes(no_switch_dict: dict):
@@ -31,11 +31,14 @@ def getClassRatios(n_classes: int, imbalance: bool = True):
     if not imbalance:
         return [1 / n_classes for i in range(n_classes)]
     else:
-        return [i / sum(range(1, n_classes + 1)) for i in range(1, n_classes + 1)]
+        proportions = [1] * n_classes
+        proportions[len(proportions) - 1] = 1 / n_classes
+        return [proportions[i] / sum(proportions) for i in range(0, n_classes)]
 
 
 streams = []
 
+"""
 # NO_DRIFT_SCENARIO_BALANCED
 for i in [2, 3, 5, 10]:
     streams.append(
@@ -48,8 +51,8 @@ for i in [2, 3, 5, 10]:
                     n_classes=i,
                     n_features=2,
                     n_centroids=i * 2,
-                    min_distance=0.2,
-                    std_dev=0.15,
+                    min_distance=0.3,
+                    std_dev=0.1,
                 ),
                 getClassRatios(i, False),
             ),
@@ -96,10 +99,10 @@ for i in [2, 3, 5, 10]:
                     n_classes=i,
                     n_features=2,
                     n_centroids=i * 2,
-                    min_distance=0.2,
-                    std_dev=0.15,
+                    min_distance=0.3,
+                    std_dev=0.1,
                 ),
-                getClassRatios(i, True),
+                [j / sum(range(1, i + 1)) for j in range(1, i + 1)],
             ),
         )
     )
@@ -116,7 +119,7 @@ for i in [2, 3, 5, 10]:
                     max_tree_depth=10,
                     first_leaf_level=10,
                 ),
-                getClassRatios(i, True),
+                [j / sum(range(1, i + 1)) for j in range(1, i + 1)],
             ),
         )
     )
@@ -126,10 +129,250 @@ for i in [2, 3, 5, 10]:
             "hp_no_drift_{}_1:{}".format(i, i),
             MultiClassImbalancedStream(
                 HyperplaneMC(n_features=2, n_classes=i),
-                getClassRatios(i, True),
+                [j / sum(range(1, i + 1)) for j in range(1, i + 1)],
             ),
         )
     )
+
+
+
+# INTRA-CLASS GLOBAL_NO_IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2.shift_cluster(
+            i - 1
+        )  # moving always the minority class if it is imbalance
+        streams.append(
+            (
+                "intra_class_drift_global_shifting_cluster_{}_rbf_{}_1:1".format(ds, i),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+# INTRA-CLASS GLOBAL IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2.shift_cluster(
+            i - 1
+        )  # moving always the minority class if it is imbalance
+        streams.append(
+            (
+                "intra_class_drift_global_shifting_cluster_{}_rbf_{}_1:{}".format(
+                    ds, i, i
+                ),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, True)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, True)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+streams_global = streams.copy()
+
+# LOCAL_RBF = [SHIFT ONE OF THE CLUSTERS, ADD A NEW A CLUSTER]
+# INTRA-CLASS LOCAL NO IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2.shift_cluster(
+            i - 1, 0.5
+        )  # moving always the minority class if it is imbalance
+        streams.append(
+            (
+                "intra_class_drift_local_shifting_cluster_{}_rbf_{}_1:{}".format(
+                    ds, i, 1
+                ),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+
+# INTRA-CLASS LOCAL NO IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2.add_cluster(
+            i - 1
+        )  # moving always the minority class if it is imbalance
+        streams.append(
+            (
+                "intra_class_drift_local_emerging_cluster_{}_rbf_{}_1:{}".format(
+                    ds, i, 1
+                ),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+# INTRA-CLASS LOCAL IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2.shift_cluster(
+            i - 1, 0.5
+        )  # moving always the minority class if it is imbalance
+        streams.append(
+            (
+                "intra_class_drift_local_shifting_cluster_{}_rbf_{}_1:{}".format(
+                    ds, i, i
+                ),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, True)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, True)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+# INTRA-CLASS LOCAL IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+        base_stream_2.add_cluster(
+            i - 1
+        )  # moving always the minority class if it is imbalance
+        streams.append(
+            (
+                "intra_class_drift_local_emerging_cluster_{}_rbf_{}_1:{}".format(
+                    ds, i, i
+                ),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, True)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, True)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+"""
 
 
 def save_csv(streams):
@@ -143,4 +386,4 @@ if __name__ == "__main__":
 
     from joblib import Parallel, delayed
 
-    out = Parallel(n_jobs=1)(delayed(save_csv)(stream) for stream in streams)
+    out = Parallel(n_jobs=8)(delayed(save_csv)(stream) for stream in streams)
