@@ -1085,7 +1085,7 @@ def save_csv(streams):
     name, stream = streams
     print("{}.csv".format(name))
     save_stream(
-        stream, file="datasets/intra_class/local/{}.csv".format(name), size=SIZE
+        stream, file="datasets/inter_class/global/{}.csv".format(name), size=SIZE
     )
 
 

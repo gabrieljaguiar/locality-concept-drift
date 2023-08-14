@@ -1,9 +1,9 @@
 library(ggplot2)
 library(plotly)
 
-folder = "../datasets/intra_class/global/"
+folder = "../datasets/inter_class/global/"
 
-files <- list.files(folder, pattern = ".*rt.*.csv$")
+files <- list.files(folder, pattern = "*.csv$")
 
 for (file in files){
   print (file)
