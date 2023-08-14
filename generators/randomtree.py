@@ -61,11 +61,13 @@ class RandomTreeMC(RandomTree):
 
     def _prune_tree(self, fraction: float = 0.5):
         rng_tree = random.Random(self.seed_tree)
-        to_be_removed = rng_tree.sample(
-            population=self.leafs, k=int(fraction * len(self.leafs))
-        )
-        for leaf in to_be_removed:
-            leaf.class_label = -1
+        for i in range(self.n_classes):
+            class_leafs = [l for l in self.leafs if l.class_label == i]
+            to_be_removed = rng_tree.sample(
+                population=class_leafs, k=int(fraction * len(class_leafs))
+            )
+            for leaf in to_be_removed:
+                leaf.class_label = -1
 
     def create_new_node(self, class_1: int, fraction: float = 0.2):
         rng_tree = random.Random(self.seed_tree)
