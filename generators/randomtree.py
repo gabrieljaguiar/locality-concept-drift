@@ -59,20 +59,23 @@ class RandomTreeMC(RandomTree):
                 n.parent = node
                 self._collect_leaf_nodes(n, leafs)
 
-    def _prune_tree(self, fraction: float = 0.2):
+    def _prune_tree(self, fraction: float = 0.5):
         rng_tree = random.Random(self.seed_tree)
         to_be_removed = rng_tree.sample(
             population=self.leafs, k=int(fraction * len(self.leafs))
         )
         for leaf in to_be_removed:
-            leaf.parent.children.remove(leaf)
+            leaf.class_label = -1
 
-    def create_new_node(self, class_1: int):
-        for l in self.leafs:
-            if len(l.parent.children) == 1:
-                new_leaf_node = TreeNode()
-                new_leaf_node.class_label = class_1
-                l.parent.children.append(new_leaf_node)
+    def create_new_node(self, class_1: int, fraction: float = 0.2):
+        rng_tree = random.Random(self.seed_tree)
+        leafs_to_be_changed = rng_tree.sample(
+            population=[leaf for leaf in self.leafs if leaf.class_label == -1],
+            k=int(fraction * len(self.leafs)),
+        )
+        for l in leafs_to_be_changed:
+            if l.class_label == -1:
+                l.class_label = class_1
         self.leafs = self.get_leaf_nodes()
 
     def get_leaf_nodes(self):
@@ -113,7 +116,7 @@ class RandomTreeMC(RandomTree):
                         )
                     y = self._classify_instance(self.tree_root, x)
 
-                    valid_instance = y is not None
+                    valid_instance = y != -1
                 except Exception as e:
                     valid_instance = False
             yield x, y

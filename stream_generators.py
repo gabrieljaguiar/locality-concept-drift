@@ -374,27 +374,54 @@ for i in [2, 3, 5, 10]:
 
 """
 
-st_1 = RandomTreeMC(42, 42, 2, 2, 0, 0, 8, 8)
-st_2 = RandomTreeMC(42, 42, 2, 2, 0, 0, 8, 8)
-st_2.create_new_node(1)
-streams = [
-    (
-        "test_stream",
-        ConceptDriftStream(
-            st_1,
-            st_2,
-            width=1,
-            position=SIZE / 2,
-            size=SIZE,
-        ),
-    )
-]
+# INTRA-CLASS LOCAL IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomTreeMC(
+            42,
+            42,
+            n_classes=i,
+            n_num_features=2,
+            n_cat_features=0,
+            n_categories_per_feature=0,
+            max_tree_depth=10,
+            first_leaf_level=9,
+        )
+        base_stream_2 = RandomTreeMC(
+            42,
+            42,
+            n_classes=i,
+            n_num_features=2,
+            n_cat_features=0,
+            n_categories_per_feature=0,
+            max_tree_depth=10,
+            first_leaf_level=9,
+        )
+        base_stream_2.create_new_node(i - 1)  # adding new branches
+        streams.append(
+            (
+                "intra_class_drift_local_emerging_branch_{}_rt_{}_1:{}".format(
+                    ds, i, i
+                ),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, True)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, True)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
 
 
+# HAVE TO IMPLEMENT, DESTROYING BRANCH OF ONE CLASS INTRA-CLASS GLOBAL (CHANGING COMPLETELY THE BRANCHES OF ONE CLASS, DESTROYING ALL OF ONE CLASS AND REBUILDING IT)
+# HAVE TO IMPLEMENT, DESTROYING BRANCH OF ONE CLASS INTRA-CLASS LOCAL
 def save_csv(streams):
     name, stream = streams
     print("{}.csv".format(name))
-    save_stream(stream, file="datasets/{}.csv".format(name), size=SIZE)
+    save_stream(
+        stream, file="datasets/intra_class/local/{}.csv".format(name), size=SIZE
+    )
 
 
 if __name__ == "__main__":
