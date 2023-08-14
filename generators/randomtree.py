@@ -34,13 +34,6 @@ class RandomTreeMC(RandomTree):
         self.leafs = self.get_leaf_nodes()
 
     def _generate_random_tree(self):
-        """
-        Generates the random tree, starting from the root node and following
-        the constraints passed as parameters to the initializer.
-
-        The tree is recursively generated, node by node, until it reaches the
-        maximum tree depth.
-        """
         rng_tree = random.Random(self.seed_tree)
         candidate_features = list(range(self.n_num_features + self.n_cat_features))
         min_numeric_values = [-1] * self.n_num_features
@@ -67,13 +60,31 @@ class RandomTreeMC(RandomTree):
                 population=class_leafs, k=int(fraction * len(class_leafs))
             )
             for leaf in to_be_removed:
+                leaf.previous_class = leaf.class_label
                 leaf.class_label = -1
 
-    def create_new_node(self, class_1: int, fraction: float = 0.2):
+    def prune_class(self, class_1: int, fraction: float = 0.15):
         rng_tree = random.Random(self.seed_tree)
+        class_leafs = [l for l in self.leafs if l.class_label == class_1]
+        to_be_removed = rng_tree.sample(
+            population=class_leafs, k=int(fraction * len(class_leafs))
+        )
+        for leaf in to_be_removed:
+            leaf.previous_class = leaf.class_label
+            leaf.class_label = -1
+
+    def create_new_node(
+        self, class_1: int, fraction: float = 0.2, overlap: bool = True
+    ):
+        rng_tree = random.Random(self.seed_tree)
+        population = [
+            leaf
+            for leaf in self.leafs
+            if (leaf.class_label == -1 and (leaf.previous_class != class_1 or overlap))
+        ]
         leafs_to_be_changed = rng_tree.sample(
-            population=[leaf for leaf in self.leafs if leaf.class_label == -1],
-            k=int(fraction * len(self.leafs)),
+            population=population,
+            k=int(fraction * len(population)),
         )
         for l in leafs_to_be_changed:
             if l.class_label == -1:
