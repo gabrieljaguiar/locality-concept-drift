@@ -1,7 +1,7 @@
 library(ggplot2)
 library(plotly)
 
-folder = "../datasets/inter_class/global/"
+folder = "../datasets/"
 
 files <- list.files(folder, pattern = "*.csv$")
 
@@ -24,6 +24,6 @@ for (file in files){
     scale_shape_manual(values=c(seq(1,length(unique(data$class))))) +
     theme_bw() +
     facet_grid(. ~ timing)
-  ggsave(filename = paste0(folder,file, ".pdf"), plot=g, width = 12, height = 4)
-  
+  #ggsave(filename = paste0(folder,file, ".pdf"), plot=g, width = 12, height = 4)
+  g
 }

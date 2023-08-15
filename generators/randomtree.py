@@ -93,6 +93,7 @@ class RandomTreeMC(RandomTree):
 
     def get_leaf_nodes(self):
         leafs = []
+        self.tree_root.parent = None
         self._collect_leaf_nodes(self.tree_root, leafs)
         return leafs
 
@@ -111,6 +112,46 @@ class RandomTreeMC(RandomTree):
         for i in range(len(swap_class_1)):
             swap_class_1[i].class_label = class_2
             swap_class_2[i].class_label = class_1
+
+    def split_node(self, class_1: int, class_2: int, fraction: float = 0.2):
+        rng_sample = random.Random(self.seed_sample)
+        class_1_leafs = [l for l in self.leafs if l.class_label == class_1]
+        class_1_leafs = rng_sample.choices(
+            class_1_leafs, k=int(fraction * len(class_1_leafs))
+        )
+        for class_1_leaf in class_1_leafs:
+            # print(class_1_leaf)
+            min_numeric_values = [-1] * self.n_num_features
+            max_numeric_values = [1] * self.n_num_features
+
+            node = class_1_leaf
+
+            while not (node.parent is None):
+                if node.parent.children.index(node) == 0:  # left split
+                    if max_numeric_values[node.parent.split_feature_idx] == 1:
+                        max_numeric_values[
+                            node.parent.split_feature_idx
+                        ] = node.parent.split_feature_val
+                else:
+                    if min_numeric_values[node.parent.split_feature_idx] == -1:
+                        min_numeric_values[
+                            node.parent.split_feature_idx
+                        ] = node.parent.split_feature_val
+                node = node.parent
+
+            node = class_1_leaf
+            chosen_feature = rng_sample.randint(0, self.n_features - 1)
+
+            node.split_feature_idx = chosen_feature
+            min_val = min_numeric_values[chosen_feature]
+            max_val = max_numeric_values[chosen_feature]
+            node.split_feature_val = (max_val - min_val) * rng_sample.random() + min_val
+
+            leaf_node_1 = TreeNode()
+            leaf_node_1.class_label = class_1
+            leaf_node_2 = TreeNode()
+            leaf_node_2.class_label = class_2
+            node.children = [leaf_node_1, leaf_node_2]
 
     def __iter__(self):
         rng_sample = random.Random(self.seed_sample)

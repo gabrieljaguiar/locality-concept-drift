@@ -1081,7 +1081,7 @@ for i in [2, 3, 5, 10]:
         )
 """
 
-
+"""
 # INTER-CLASS LOCAL NO IMBALANCE Two classes switch completely
 for i in [2, 3, 5, 10]:
     for ds in [1, 1000, 5000, 10000]:
@@ -1455,9 +1455,293 @@ for i in [2, 3, 5, 10]:
                 ),
             )
         )
+"""
 
-# RBF: (i) part of two classes disappear, (ii) new clusters from two classes emerge, (iii) two classes clusters shift, (iv) clusters from one class split in two clusters from different classes
-# RT: (i) pruning branch of two classes, (ii) emerging branch of two classes, (iii) regrowth branch of two classes, (iv) leaf split into a new node of class 1 and class 2.
+
+# INTER-CLASS LOCAL NO IMBALANCE Two classes clusters shift RBF
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+
+        base_stream_2 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+
+        base_stream_2.shift_cluster(i - 1, proportions=0.5)
+        base_stream_2.shift_cluster(i - 2, proportions=0.5)
+
+        streams.append(
+            (
+                "inter_class_drift_cluster_shift_{}_rbf_{}_1:{}".format(ds, i, 1),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+# INTER-CLASS LOCAL NO IMBALANCE new clusters from two classes emerge RBF
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+
+        base_stream_2 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+
+        base_stream_2.add_cluster(i - 1, weight=1.5)
+        base_stream_2.add_cluster(i - 2, weight=1.5)
+
+        streams.append(
+            (
+                "inter_class_drift_emerging_cluster_{}_rbf_{}_1:{}".format(ds, i, 1),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+# INTER-CLASS LOCAL NO IMBALANCE clusters from one class split in two clusters from different classes RBF
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+
+        base_stream_2 = RandomRBF(
+            42,
+            42,
+            n_classes=i,
+            n_features=2,
+            n_centroids=i * 2,
+            min_distance=0.3,
+            std_dev=0.1,
+        )
+
+        base_stream_2.split_cluster(i - 1, i - 2, shift_mag=0.25)
+
+        streams.append(
+            (
+                "inter_class_drift_split_cluster_{}_rbf_{}_1:{}".format(ds, i, 1),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+# INTER-CLASS LOCAL NO IMBALANCE pruning branch of two classes
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomTreeMC(
+            42,
+            42,
+            n_classes=i,
+            n_num_features=2,
+            n_cat_features=0,
+            n_categories_per_feature=0,
+            max_tree_depth=10,
+            first_leaf_level=9,
+        )
+
+        base_stream_2 = RandomTreeMC(
+            42,
+            42,
+            n_classes=i,
+            n_num_features=2,
+            n_cat_features=0,
+            n_categories_per_feature=0,
+            max_tree_depth=10,
+            first_leaf_level=9,
+        )
+
+        base_stream_2.prune_class(i - 1, fraction=0.2)
+        base_stream_2.prune_class(i - 2, fraction=0.2)
+
+        streams.append(
+            (
+                "inter_class_drift_class_pruning_branch_{}_rt_{}_1:{}".format(ds, i, 1),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+# INTER-CLASS LOCAL NO IMBALANCE emerging branch of two classes
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomTreeMC(
+            42,
+            42,
+            n_classes=i,
+            n_num_features=2,
+            n_cat_features=0,
+            n_categories_per_feature=0,
+            max_tree_depth=10,
+            first_leaf_level=9,
+        )
+
+        base_stream_2 = RandomTreeMC(
+            42,
+            42,
+            n_classes=i,
+            n_num_features=2,
+            n_cat_features=0,
+            n_categories_per_feature=0,
+            max_tree_depth=10,
+            first_leaf_level=9,
+        )
+
+        base_stream_2.create_new_node(i - 1, fraction=0.15)
+        base_stream_2.create_new_node(i - 2, fraction=0.15)
+
+        streams.append(
+            (
+                "inter_class_drift_class_emerging_branch_{}_rt_{}_1:{}".format(
+                    ds, i, 1
+                ),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+# INTER-CLASS LOCAL NO IMBALANCE regrowth branch of two classes,
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomTreeMC(
+            42,
+            42,
+            n_classes=i,
+            n_num_features=2,
+            n_cat_features=0,
+            n_categories_per_feature=0,
+            max_tree_depth=10,
+            first_leaf_level=9,
+        )
+
+        base_stream_2 = RandomTreeMC(
+            42,
+            42,
+            n_classes=i,
+            n_num_features=2,
+            n_cat_features=0,
+            n_categories_per_feature=0,
+            max_tree_depth=10,
+            first_leaf_level=9,
+        )
+
+        base_stream_2.prune_class(i - 1, fraction=0.2)
+        base_stream_2.create_new_node(i - 1, fraction=0.15)
+        base_stream_2.prune_class(i - 2, fraction=0.2)
+        base_stream_2.create_new_node(i - 2, fraction=0.15)
+
+        streams.append(
+            (
+                "inter_class_drift_class_emerging_branch_{}_rt_{}_1:{}".format(
+                    ds, i, 1
+                ),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
+
+# INTER-CLASS LOCAL NO IMBALANCE leaf split into a new node of class 1 and class 2.
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        base_stream_1 = RandomTreeMC(
+            42,
+            42,
+            n_classes=i,
+            n_num_features=2,
+            n_cat_features=0,
+            n_categories_per_feature=0,
+            max_tree_depth=10,
+            first_leaf_level=9,
+        )
+
+        base_stream_2 = RandomTreeMC(
+            42,
+            42,
+            n_classes=i,
+            n_num_features=2,
+            n_cat_features=0,
+            n_categories_per_feature=0,
+            max_tree_depth=10,
+            first_leaf_level=9,
+        )
+
+        base_stream_2.split_node(i - 1, i - 2, fraction=0.5)
+
+        streams.append(
+            (
+                "inter_class_drift_split_node_{}_rt_{}_1:{}".format(ds, i, 1),
+                ConceptDriftStream(
+                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
+                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
+                    width=ds,
+                    position=SIZE / 2,
+                    size=SIZE,
+                ),
+            )
+        )
 
 
 def save_csv(streams):

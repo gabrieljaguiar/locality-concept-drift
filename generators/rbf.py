@@ -103,7 +103,7 @@ class RandomRBF(RandomRBF):
         for c in class_2_centroid:
             c.class_label = class_1
 
-    def add_cluster(self, class_1: int):
+    def add_cluster(self, class_1: int, weight: float = 1.0):
         self.centroids.append(Centroid())
         i = len(self.centroids) - 1
         rand_centre = None
@@ -115,7 +115,7 @@ class RandomRBF(RandomRBF):
         self.centroids[i].centre = rand_centre
         self.centroids[i].class_label = class_1
         self.centroids[i].std_dev = self.std_dev
-        self.centroid_weights.append(1)
+        self.centroid_weights.append(weight)
 
     def shift_cluster(self, class_1: int, proportions: float = 1.0):
         class_centroids = [c for c in self.centroids if c.class_label == class_1]
@@ -125,5 +125,33 @@ class RandomRBF(RandomRBF):
             class_centroids, k=int(len(class_centroids) * proportions)
         )
         for c in to_be_removed_clusters:
+            index = self.centroids.index(c)
             self.centroids.remove(c)
-            self.centroid_weights.remove(1)
+            self.centroid_weights.pop(index)
+
+    def split_cluster(self, class_1: int, class_2: int, shift_mag: float = 0.2):
+        class_centroids = [c for c in self.centroids if c.class_label == class_1]
+        c = self.rng_model.choice(class_centroids)
+        centroid = c.centre
+        shift = self.rng_model.uniform(0.05, shift_mag)
+
+        center_1 = [(att + shift_mag) for att in centroid]
+        center_2 = [(att - shift_mag) for att in centroid]
+
+        index = self.centroids.index(c)
+        self.centroids.remove(c)
+        self.centroid_weights.pop(index)
+        c1 = Centroid()
+        c2 = Centroid()
+
+        c1.centre = center_1
+        c1.class_label = class_1
+        c1.std_dev = self.std_dev
+        self.centroids.append(c1)
+        self.centroid_weights.append(1)
+
+        c2.centre = center_2
+        c2.class_label = class_2
+        c2.std_dev = self.std_dev
+        self.centroids.append(c2)
+        self.centroid_weights.append(1)
