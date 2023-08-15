@@ -87,15 +87,21 @@ class RandomRBF(RandomRBF):
         y = current_centroid.class_label
         return x, y
 
-    def swap_clusters(self, class_1: int, class_2: int):
+    def swap_clusters(self, class_1: int, class_2: int, proportions: float = 0.5):
         class_1_centroids = [c for c in self.centroids if c.class_label == class_1]
         class_2_centroids = [c for c in self.centroids if c.class_label == class_2]
 
-        class_1_centroid = self.rng_model.choice(class_1_centroids)
-        class_2_centroid = self.rng_model.choice(class_2_centroids)
+        class_1_centroid = self.rng_model.sample(
+            class_1_centroids, k=int(len(class_1_centroids) * proportions)
+        )
+        class_2_centroid = self.rng_model.sample(
+            class_2_centroids, k=int(len(class_1_centroids) * proportions)
+        )
 
-        class_1_centroid.class_label = class_2
-        class_2_centroid.class_label = class_1
+        for c in class_1_centroid:
+            c.class_label = class_2
+        for c in class_2_centroid:
+            c.class_label = class_1
 
     def add_cluster(self, class_1: int):
         self.centroids.append(Centroid())
