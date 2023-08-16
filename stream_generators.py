@@ -38,652 +38,812 @@ def getClassRatios(n_classes: int, imbalance: bool = True):
 
 streams = []
 
-"""
+
 # NO_DRIFT_SCENARIO_BALANCED
+no_drift = []
+
 for i in [2, 3, 5, 10]:
-    streams.append(
-        (
-            "rbf_no_drift_{}_1:1".format(i),
-            MultiClassImbalancedStream(
-                RandomRBF(
-                    42,
-                    42,
-                    n_classes=i,
-                    n_features=2,
-                    n_centroids=i * 2,
-                    min_distance=0.3,
-                    std_dev=0.1,
-                ),
-                getClassRatios(i, False),
-            ),
-        )
-    )
-
-    streams.append(
-        (
-            "rt_no_drift_{}_1:1".format(i),
-            MultiClassImbalancedStream(
-                RandomTreeMC(
-                    42,
-                    42,
-                    n_classes=i,
-                    n_num_features=2,
-                    n_cat_features=0,
-                    max_tree_depth=10,
-                    first_leaf_level=10,
-                ),
-                getClassRatios(i, False),
-            ),
-        )
-    )
-
-    streams.append(
-        (
-            "hp_no_drift_{}_1:1".format(i),
-            MultiClassImbalancedStream(
-                HyperplaneMC(n_features=2, n_classes=i),
-                getClassRatios(i, False),
-            ),
-        )
-    )
-
-# NO_DRIFT_SCENARIO_IMBALANCED
-for i in [2, 3, 5, 10]:
-    streams.append(
-        (
-            "rbf_no_drift_{}_1:{}".format(i, i),
-            MultiClassImbalancedStream(
-                RandomRBF(
-                    42,
-                    42,
-                    n_classes=i,
-                    n_features=2,
-                    n_centroids=i * 2,
-                    min_distance=0.3,
-                    std_dev=0.1,
-                ),
-                [j / sum(range(1, i + 1)) for j in range(1, i + 1)],
-            ),
-        )
-    )
-    streams.append(
-        (
-            "rt_no_drift_{}_1:{}".format(i, 1),
-            MultiClassImbalancedStream(
-                RandomTreeMC(
-                    42,
-                    42,
-                    n_classes=i,
-                    n_num_features=2,
-                    n_cat_features=0,
-                    max_tree_depth=10,
-                    first_leaf_level=10,
-                ),
-                [j / sum(range(1, i + 1)) for j in range(1, i + 1)],
-            ),
-        )
-    )
-
-    streams.append(
-        (
-            "hp_no_drift_{}_1:{}".format(i, i),
-            MultiClassImbalancedStream(
-                HyperplaneMC(n_features=2, n_classes=i),
-                [j / sum(range(1, i + 1)) for j in range(1, i + 1)],
-            ),
-        )
-    )
-
-
-
-# INTRA-CLASS GLOBAL_NO_IMBALANCE
-for i in [2, 3, 5, 10]:
-    for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2.shift_cluster(
-            i - 1
-        )  # moving always the minority class if it is imbalance
-        streams.append(
+    for f in [2, 5, 10]:
+        no_drift.append(
             (
-                "intra_class_drift_global_shifting_cluster_{}_rbf_{}_1:1".format(ds, i),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
+                "no_drift/rbf_no_drift_f_{}_c_{}_1:1".format(f, i),
+                MultiClassImbalancedStream(
+                    RandomRBF(
+                        42,
+                        42,
+                        n_classes=i,
+                        n_features=f,
+                        n_centroids=i * 2,
+                        min_distance=0.3,
+                        std_dev=0.1,
+                    ),
+                    getClassRatios(i, False),
                 ),
             )
         )
+
+        no_drift.append(
+            (
+                "no_drift/rt_no_drift_f_{}_c_{}_1:1".format(f, i),
+                MultiClassImbalancedStream(
+                    RandomTreeMC(
+                        42,
+                        42,
+                        n_classes=i,
+                        n_num_features=f,
+                        n_cat_features=0,
+                        max_tree_depth=10,
+                        first_leaf_level=10,
+                    ),
+                    getClassRatios(i, False),
+                ),
+            )
+        )
+
+        no_drift.append(
+            (
+                "no_drift/hp_no_drift_f_{}_c_{}_1:1".format(f, i),
+                MultiClassImbalancedStream(
+                    HyperplaneMC(n_features=f, n_classes=i),
+                    getClassRatios(i, False),
+                ),
+            )
+        )
+
+# NO_DRIFT_SCENARIO_IMBALANCED
+for i in [2, 3, 5, 10]:
+    for f in [2, 5, 10]:
+        no_drift.append(
+            (
+                "no_drift/rbf_no_drift_f_{}_c_{}_1:{}".format(f, i, i),
+                MultiClassImbalancedStream(
+                    RandomRBF(
+                        42,
+                        42,
+                        n_classes=i,
+                        n_features=f,
+                        n_centroids=i * 2,
+                        min_distance=0.3,
+                        std_dev=0.1,
+                    ),
+                    [j / sum(range(1, i + 1)) for j in range(1, i + 1)],
+                ),
+            )
+        )
+        no_drift.append(
+            (
+                "no_drift/rt_no_drift_f_{}_c_{}_1:{}".format(f, i, i),
+                MultiClassImbalancedStream(
+                    RandomTreeMC(
+                        42,
+                        42,
+                        n_classes=i,
+                        n_num_features=f,
+                        n_cat_features=0,
+                        max_tree_depth=10,
+                        first_leaf_level=10,
+                    ),
+                    [j / sum(range(1, i + 1)) for j in range(1, i + 1)],
+                ),
+            )
+        )
+
+        no_drift.append(
+            (
+                "no_drift/hp_no_drift_f_{}_c_{}_1:{}".format(f, i, i),
+                MultiClassImbalancedStream(
+                    HyperplaneMC(n_features=f, n_classes=i),
+                    [j / sum(range(1, i + 1)) for j in range(1, i + 1)],
+                ),
+            )
+        )
+
+
+intra_class = []
+# INTRA-CLASS GLOBAL_NO_IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
+            )
+            base_stream_2 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
+            )
+            base_stream_2.shift_cluster(
+                i - 1
+            )  # moving always the minority class if it is imbalance
+            intra_class.append(
+                (
+                    "intra_class/global/intra_class_drift_global_shifting_cluster_rbf_ds_{}_f_{}_c_{}_1:1".format(
+                        ds, f, i
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, False)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, False)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
+# INTRA-CLASS GLOBAL NO IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2.prune_class(i - 1, fraction=1)
+            base_stream_2.create_new_node(i - 1, fraction=0.8)
+            intra_class.append(
+                (
+                    "intra_class/global/intra_class_drift_global_branch_swap_rt_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, 1
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, False)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, False)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
 
 # INTRA-CLASS GLOBAL IMBALANCE
 for i in [2, 3, 5, 10]:
     for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2.shift_cluster(
-            i - 1
-        )  # moving always the minority class if it is imbalance
-        streams.append(
-            (
-                "intra_class_drift_global_shifting_cluster_{}_rbf_{}_1:{}".format(
-                    ds, i, i
-                ),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, True)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, True)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
             )
-        )
+            base_stream_2 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
+            )
+            base_stream_2.shift_cluster(
+                i - 1
+            )  # moving always the minority class if it is imbalance
+            intra_class.append(
+                (
+                    "intra_class/global/intra_class_drift_global_shifting_cluster_rbf_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, i
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, True)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, True)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
+# INTRA-CLASS GLOBAL IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2.prune_class(i - 1, fraction=1)
+            base_stream_2.create_new_node(i - 1, fraction=0.8)
+            intra_class.append(
+                (
+                    "intra_class/global/intra_class_drift_global_branch_swap_rt_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, i
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, True)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, True)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
 
-streams_global = streams.copy()
 
-# LOCAL_RBF = [SHIFT ONE OF THE CLUSTERS, ADD A NEW A CLUSTER]
 # INTRA-CLASS LOCAL NO IMBALANCE
 for i in [2, 3, 5, 10]:
     for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2.shift_cluster(
-            i - 1, 0.5
-        )  # moving always the minority class if it is imbalance
-        streams.append(
-            (
-                "intra_class_drift_local_shifting_cluster_{}_rbf_{}_1:{}".format(
-                    ds, i, 1
-                ),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
             )
-        )
+            base_stream_2 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
+            )
+            base_stream_2.shift_cluster(
+                i - 1, 0.5
+            )  # moving always the minority class if it is imbalance
+            intra_class.append(
+                (
+                    "intra_class/local/intra_class_drift_local_shifting_cluster_rbf_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, 1
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, False)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, False)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
+# INTRA-CLASS LOCAL NO IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
+            )
+            base_stream_2 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
+            )
+            base_stream_2.add_cluster(
+                i - 1
+            )  # moving always the minority class if it is imbalance
+            intra_class.append(
+                (
+                    "intra_class/local/intra_class_drift_local_emerging_cluster_rbf_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, 1
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, False)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, False)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
+# INTRA-CLASS LOCAL IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
+            )
+            base_stream_2 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
+            )
+            base_stream_2.shift_cluster(
+                i - 1, 0.5
+            )  # moving always the minority class if it is imbalance
+            intra_class.append(
+                (
+                    "intra_class/local/intra_class_drift_local_shifting_cluster_rbf_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, i
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, True)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, True)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
+# INTRA-CLASS LOCAL IMBALANCE
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
+            )
+            base_stream_2 = RandomRBF(
+                42,
+                42,
+                n_classes=i,
+                n_features=f,
+                n_centroids=i * 2,
+                min_distance=0.3,
+                std_dev=0.1,
+            )
+            base_stream_2.add_cluster(
+                i - 1
+            )  # moving always the minority class if it is imbalance
+            intra_class.append(
+                (
+                    "intra_class/local/intra_class_drift_local_emerging_cluster_rbf_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, i
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, True)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, True)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
 
 
 # INTRA-CLASS LOCAL NO IMBALANCE
 for i in [2, 3, 5, 10]:
     for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2.add_cluster(
-            i - 1
-        )  # moving always the minority class if it is imbalance
-        streams.append(
-            (
-                "intra_class_drift_local_emerging_cluster_{}_rbf_{}_1:{}".format(
-                    ds, i, 1
-                ),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
             )
-        )
+            base_stream_2 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2.create_new_node(i - 1)  # adding new branches
+            intra_class.append(
+                (
+                    "intra_class/local/intra_class_drift_local_emerging_branch_rt_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, 1
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, False)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, False)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
+
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2.prune_class(i - 1)  # adding new branches
+            intra_class.append(
+                (
+                    "intra_class/local/intra_class_drift_local_pruning_branch_rt_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, 1
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, False)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, False)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
+
+for i in [2, 3, 5, 10]:
+    for ds in [1, 1000, 5000, 10000]:
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2.prune_class(i - 1, fraction=0.3)  # adding new branches
+            base_stream_2.create_new_node(i - 1, fraction=0.3)
+            intra_class.append(
+                (
+                    "intra_class/local/intra_class_drift_local_regrowth_branch_rt_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, 1
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, False)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, False)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
 
 # INTRA-CLASS LOCAL IMBALANCE
 for i in [2, 3, 5, 10]:
     for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2.shift_cluster(
-            i - 1, 0.5
-        )  # moving always the minority class if it is imbalance
-        streams.append(
-            (
-                "intra_class_drift_local_shifting_cluster_{}_rbf_{}_1:{}".format(
-                    ds, i, i
-                ),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, True)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, True)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
             )
-        )
-
-# INTRA-CLASS LOCAL IMBALANCE
-for i in [2, 3, 5, 10]:
-    for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2 = RandomRBF(
-            42,
-            42,
-            n_classes=i,
-            n_features=2,
-            n_centroids=i * 2,
-            min_distance=0.3,
-            std_dev=0.1,
-        )
-        base_stream_2.add_cluster(
-            i - 1
-        )  # moving always the minority class if it is imbalance
-        streams.append(
-            (
-                "intra_class_drift_local_emerging_cluster_{}_rbf_{}_1:{}".format(
-                    ds, i, i
-                ),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, True)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, True)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+            base_stream_2 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
             )
-        )
-
-"""
-
-"""
-# INTRA-CLASS LOCAL NO IMBALANCE
-for i in [2, 3, 5, 10]:
-    for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2.create_new_node(i - 1)  # adding new branches
-        streams.append(
-            (
-                "intra_class_drift_local_emerging_branch_{}_rt_{}_1:{}".format(
-                    ds, i, 1
-                ),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+            base_stream_2.create_new_node(i - 1)  # adding new branches
+            intra_class.append(
+                (
+                    "intra_class/local/intra_class_drift_local_emerging_branch_rt_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, i
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, True)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, True)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
             )
-        )
 
 for i in [2, 3, 5, 10]:
     for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2.prune_class(i - 1)  # adding new branches
-        streams.append(
-            (
-                "intra_class_drift_local_pruning_branch_{}_rt_{}_1:{}".format(ds, i, 1),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
             )
-        )
+            base_stream_2 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2.prune_class(i - 1)  # adding new branches
+            intra_class.append(
+                (
+                    "intra_class/local/intra_class_drift_local_pruning_branch_rt_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, i
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, True)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, True)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
 
 for i in [2, 3, 5, 10]:
     for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2.prune_class(i - 1, fraction=0.3)  # adding new branches
-        base_stream_2.create_new_node(i - 1, fraction=0.3)
-        streams.append(
-            (
-                "intra_class_drift_local_regrowth_branch_{}_rt_{}_1:{}".format(
-                    ds, i, 1
-                ),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
             )
-        )
-
-# INTRA-CLASS LOCAL IMBALANCE
-for i in [2, 3, 5, 10]:
-    for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2.create_new_node(i - 1)  # adding new branches
-        streams.append(
-            (
-                "intra_class_drift_local_emerging_branch_{}_rt_{}_1:{}".format(
-                    ds, i, i
-                ),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, True)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, True)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+            base_stream_2 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
             )
-        )
-
-for i in [2, 3, 5, 10]:
-    for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2.prune_class(i - 1)  # adding new branches
-        streams.append(
-            (
-                "intra_class_drift_local_pruning_branch_{}_rt_{}_1:{}".format(ds, i, i),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, True)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, True)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+            base_stream_2.prune_class(i - 1, fraction=0.3)  # adding new branches
+            base_stream_2.create_new_node(i - 1, fraction=0.3)
+            intra_class.append(
+                (
+                    "intra_class/local/intra_class_drift_local_regrowth_branch_rt_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, i
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, True)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, True)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
             )
-        )
-
-for i in [2, 3, 5, 10]:
-    for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2.prune_class(i - 1, fraction=0.3)  # adding new branches
-        base_stream_2.create_new_node(i - 1, fraction=0.3)
-        streams.append(
-            (
-                "intra_class_drift_local_regrowth_branch_{}_rt_{}_1:{}".format(
-                    ds, i, i
-                ),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, True)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, True)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
-            )
-        )
 
 
 # INTRA-CLASS GLOBAL NO IMBALANCE
 for i in [2, 3, 5, 10]:
     for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2.prune_class(i - 1, fraction=1)
-        base_stream_2.create_new_node(i - 1, fraction=0.2, overlap=False)
-        streams.append(
-            (
-                "intra_class_drift_global_switch_branches_{}_rt_{}_1:{}".format(
-                    ds, i, 1
-                ),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, False)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, False)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
             )
-        )
+            base_stream_2 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2.prune_class(i - 1, fraction=1)
+            base_stream_2.create_new_node(i - 1, fraction=0.2, overlap=False)
+            intra_class.append(
+                (
+                    "intra_class/global/intra_class_drift_global_switch_branches_rt_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, 1
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, False)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, False)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
 
 # INTRA-CLASS GLOBAL IMBALANCE
 for i in [2, 3, 5, 10]:
     for ds in [1, 1000, 5000, 10000]:
-        base_stream_1 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2 = RandomTreeMC(
-            42,
-            42,
-            n_classes=i,
-            n_num_features=2,
-            n_cat_features=0,
-            n_categories_per_feature=0,
-            max_tree_depth=10,
-            first_leaf_level=9,
-        )
-        base_stream_2.prune_class(i - 1, fraction=1)
-        base_stream_2.create_new_node(i - 1, fraction=0.2, overlap=False)
-        streams.append(
-            (
-                "intra_class_drift_global_switch_branches_{}_rt_{}_1:{}".format(
-                    ds, i, i
-                ),
-                ConceptDriftStream(
-                    MultiClassImbalancedStream(base_stream_1, getClassRatios(i, True)),
-                    MultiClassImbalancedStream(base_stream_2, getClassRatios(i, True)),
-                    width=ds,
-                    position=SIZE / 2,
-                    size=SIZE,
-                ),
+        for f in [2, 5, 10]:
+            base_stream_1 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
             )
-        )
-"""
+            base_stream_2 = RandomTreeMC(
+                42,
+                42,
+                n_classes=i,
+                n_num_features=f,
+                n_cat_features=0,
+                n_categories_per_feature=0,
+                max_tree_depth=10,
+                first_leaf_level=9,
+            )
+            base_stream_2.prune_class(i - 1, fraction=1)
+            base_stream_2.create_new_node(i - 1, fraction=0.2, overlap=False)
+            intra_class.append(
+                (
+                    "intra_class/global/intra_class_drift_global_switch_branches_rt_ds_{}_f_{}_c_{}_1:{}".format(
+                        ds, f, i, i
+                    ),
+                    ConceptDriftStream(
+                        MultiClassImbalancedStream(
+                            base_stream_1, getClassRatios(i, True)
+                        ),
+                        MultiClassImbalancedStream(
+                            base_stream_2, getClassRatios(i, True)
+                        ),
+                        width=ds,
+                        position=SIZE / 2,
+                        size=SIZE,
+                    ),
+                )
+            )
+
 
 """
 # INTER-CLASS GLOBAL NO IMBALANCE
@@ -1457,7 +1617,7 @@ for i in [2, 3, 5, 10]:
         )
 """
 
-
+"""
 # INTER-CLASS LOCAL NO IMBALANCE Two classes clusters shift RBF
 for i in [2, 3, 5, 10]:
     for ds in [1, 1000, 5000, 10000]:
@@ -1742,14 +1902,13 @@ for i in [2, 3, 5, 10]:
                 ),
             )
         )
+"""
 
 
 def save_csv(streams):
     name, stream = streams
     print("{}.csv".format(name))
-    save_stream(
-        stream, file="datasets/inter_class/local/{}.csv".format(name), size=SIZE
-    )
+    save_stream(stream, file="datasets/{}.csv".format(name), size=SIZE)
 
 
 if __name__ == "__main__":
@@ -1757,4 +1916,4 @@ if __name__ == "__main__":
 
     from joblib import Parallel, delayed
 
-    out = Parallel(n_jobs=1)(delayed(save_csv)(stream) for stream in streams)
+    out = Parallel(n_jobs=8)(delayed(save_csv)(stream) for stream in no_drift)
