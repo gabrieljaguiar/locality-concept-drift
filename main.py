@@ -5,7 +5,8 @@ from generators.multi_class_drift import MultiClassDrift
 from evaluators.multi_class_evaluator import MultiClassEvaluator
 from generators.imbalance_generators import MultiClassImbalancedStream
 from experiment import Experiment
-from stream_generators import streams
+
+# from stream_generators import streams
 from joblib import Parallel, delayed
 import itertools
 from drift_detectors import RDDM_M
@@ -13,44 +14,45 @@ from frouros.detectors.concept_drift.streaming.statistical_process_control.rddm 
     RDDM,
 )
 from drift_detectors import DDM_OCI, MCADWIN
+from river.stream import iter_csv
+from glob import glob
+import os
+from utils.csv import CSVStream
 
 models = [
-    (
-        "LB",
-        ensemble.LeveragingBaggingClassifier(
-            model=(tree.HoeffdingTreeClassifier()),
-            n_models=10,
-            seed=42,
-        ),
-    ),
-    ("HT", ensemble.LeveragingBaggingClassifier(tree.HoeffdingTreeClassifier())),
+    # (
+    #    "LB",
+    #    ensemble.LeveragingBaggingClassifier(
+    #        model=(tree.HoeffdingTreeClassifier()),
+    #        n_models=10,
+    #        seed=42,
+    #    ),
+    # ),
+    ("HT", tree.HoeffdingTreeClassifier()),
     # ("NB", naive_bayes.GaussianNB()),
 ]
 
 dds = [
-    # ("ADWIN", drift.ADWIN()),
-    # ("DDM", drift.binary.DDM()),
-    # ("RDDM", RDDM_M()),
-    ("MCADWIN", MCADWIN()),
-    # ("DDM_OCI", DDM_OCI()),
+    ("ADWIN", drift.ADWIN()),
+    ("DDM", drift.binary.DDM()),
+    ("RDDM", RDDM_M()),
+    # ("MCADWIN", MCADWIN()),
+    ("DDM_OCI", DDM_OCI()),
 ]
 
 
-def task(stream, model, dd):
-    stream_name, stream = stream
+def task(stream_path, model, dd):
+    stream = CSVStream("{}".format(stream_path))
+    stream_name = os.path.splitext(os.path.basename(stream_path))[0]
+    stream_output = os.path.dirname(stream_path).replace("datasets", "output")
+    print(stream_output)
     model_name, model = model
     dd_name, dd = dd
     if type(dd) == MCADWIN:
         dd = MCADWIN(n_classes=stream.n_classes)
     exp_name = "{}_{}_{}".format(model_name, dd_name, stream_name)
     print("Running {}...".format(exp_name))
-    exp = Experiment(
-        exp_name,
-        "exp_output/",
-        model,
-        dd,
-        stream,
-    )
+    exp = Experiment(exp_name, stream_output, model, dd, stream, stream_size=100000)
 
     exp.run()
 
@@ -58,7 +60,16 @@ def task(stream, model, dd):
 
 
 for model in models:
-    out = Parallel(n_jobs=12)(
+    PATH = "./datasets/"
+    EXT = "*.csv"
+    streams = [
+        file
+        for path, subdir, files in os.walk(PATH)
+        for file in glob(os.path.join(path, EXT))
+    ]
+    # print(streams)
+    # exit(0)
+    out = Parallel(n_jobs=1)(
         delayed(task)(stream, model, dd)
         for stream, dd in itertools.product(streams, dds)
     )

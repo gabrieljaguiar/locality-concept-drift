@@ -18,13 +18,16 @@ class Experiment:
         stream: SyntheticDataset,
         evaluationWindow: int = 500,
         theta: float = 0.99,
+        stream_size: float = None,
     ) -> None:
         self.name = name
         self.savePath = savePath
         self.model = model
         self.driftDetctor = driftDetector
         self.stream = stream
-        self.size = self.stream.n_samples
+        self.size = stream_size
+        if stream_size is None:
+            self.size = self.stream.n_samples
         self.evaluator = MultiClassEvaluator(evaluationWindow, self.stream.n_classes)
         self.evaluationWindow = evaluationWindow
         self.gracePeriod = 200
@@ -46,7 +49,10 @@ class Experiment:
         self.metrics = []
         drift_detected = 0
         local_drift = 0
-        for i, (x, y) in enumerate(self.stream.take(self.size)):
+        if type(self.stream) == SyntheticDataset:
+            self.stream = self.stream.take(self.size)
+        for i, (x, y) in enumerate(self.stream):
+            # print(i)
             if i > self.gracePeriod:
                 self.updateDriftDetector(y, self.model.predict_one(x))
                 self.evaluator.addResult((x, y), self.model.predict_proba_one(x))
