@@ -67,6 +67,7 @@ class Experiment:
                         "idx": i + 1,
                         "accuracy": self.evaluator.getAccuracy(),
                         "gmean": self.evaluator.getGMean(),
+                        "kappa": self.evaluator.getKappa(),
                     }
 
                     for c in range(0, self.stream.n_classes):

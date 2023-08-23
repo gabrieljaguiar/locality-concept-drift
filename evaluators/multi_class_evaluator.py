@@ -15,6 +15,7 @@ class MultiClassEvaluator(Evaluator):
             probabilties.get(list(probabilties.keys())[i])
             for i in range(self.numberOfClasses)
         ]
+        # print(classVotes)
         pred_index = classVotes.index(max(classVotes))
         y_index = sorted(list(probabilties.keys())).index(y)
 
@@ -57,7 +58,7 @@ class MultiClassEvaluator(Evaluator):
 
     def getClassRecall(self, classIdx):
         tp = self.cm[classIdx][classIdx]
-        fn = sum(self.cm[classIdx][:])
+        fn = sum(self.cm[:][classIdx]) - self.cm[classIdx][classIdx]
         return tp / (tp + fn)
 
     def getGMean(self):
@@ -75,8 +76,8 @@ class MultiClassEvaluator(Evaluator):
             [
                 (self.rowKappa[i] / self.windowSize)
                 * (self.columnKappa[i] / self.windowSize)
+                for i in range(0, self.numberOfClasses)
             ]
-            for i in range(0, self.numberOfClasses)
         )
 
         return (p0 - pc) / (1.0 - pc)

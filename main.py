@@ -34,10 +34,10 @@ models = [
 
 dds = [
     ("ADWIN", drift.ADWIN()),
-    ("DDM", drift.binary.DDM()),
-    ("RDDM", RDDM_M()),
+    # ("DDM", drift.binary.DDM()),
+    # ("RDDM", RDDM_M()),
     # ("MCADWIN", MCADWIN()),
-    ("DDM_OCI", DDM_OCI()),
+    # ("DDM_OCI", DDM_OCI()),
 ]
 
 
@@ -67,9 +67,11 @@ for model in models:
         for path, subdir, files in os.walk(PATH)
         for file in glob(os.path.join(path, EXT))
     ]
-    # print(streams)
-    # exit(0)
-    out = Parallel(n_jobs=1)(
+    import random
+
+    random.shuffle(streams)
+
+    out = Parallel(n_jobs=2)(
         delayed(task)(stream, model, dd)
         for stream, dd in itertools.product(streams, dds)
     )
