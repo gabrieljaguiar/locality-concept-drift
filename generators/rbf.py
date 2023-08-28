@@ -2,10 +2,11 @@ from __future__ import annotations
 from river.datasets.synth import RandomRBF
 from river.datasets.synth.random_rbf import Centroid, random_index_based_on_weights
 import random
+import math
 from typing import List
 
 
-class RandomRBF(RandomRBF):
+class RandomRBFMC(RandomRBF):
     def __init__(
         self,
         seed_model: int = None,
@@ -20,14 +21,8 @@ class RandomRBF(RandomRBF):
         self.min_distance = min_distance
         self.std_dev = std_dev
         self.rng_model = random.Random(self.seed_model)
+        self.moving_centroids: list[MovingCentroid] = []
         self._generate_centroids()
-
-    def __iter__(self):
-        rng_sample = random.Random(self.seed_sample)
-
-        while True:
-            x, y = self._generate_sample(rng_sample)
-            yield x, y
 
     def _compute_nearest(self, centroid: List[float]):
         import math
@@ -72,6 +67,11 @@ class RandomRBF(RandomRBF):
     def _generate_sample(self, rng_sample: random.Random):
         idx = random_index_based_on_weights(self.centroid_weights, rng_sample)
         current_centroid = self.centroids[idx]
+
+        moving_centers = [m.c for m in self.moving_centroids]
+        if current_centroid in moving_centers:
+            # print("moving centroid selected")
+            self.moving_centroids[moving_centers.index(current_centroid)].update()
         att_vals = dict()
         magnitude = 0.0
         for i in range(self.n_features):
@@ -129,12 +129,15 @@ class RandomRBF(RandomRBF):
             self.centroids.remove(c)
             self.centroid_weights.pop(index)
 
-    def split_cluster(self, class_1: int, class_2: int, shift_mag: float = 0.2):
+    def split_cluster(
+        self, class_1: int, class_2: int, shift_mag: float = 0.2, width: int = 1
+    ):
         class_centroids = [c for c in self.centroids if c.class_label == class_1]
         c = self.rng_model.choice(class_centroids)
         centroid = c.centre
         shift = self.rng_model.uniform(0.05, shift_mag)
 
+        start_center = centroid.copy()
         center_1 = [(att + shift_mag) for att in centroid]
         center_2 = [(att - shift_mag) for att in centroid]
 
@@ -144,14 +147,74 @@ class RandomRBF(RandomRBF):
         c1 = Centroid()
         c2 = Centroid()
 
-        c1.centre = center_1
+        c1.centre = start_center
         c1.class_label = class_1
         c1.std_dev = self.std_dev
         self.centroids.append(c1)
         self.centroid_weights.append(1)
 
-        c2.centre = center_2
+        self.moving_centroids.append(MovingCentroid(c1, c1.centre, center_1, width))
+
+        c2.centre = start_center
         c2.class_label = class_2
         c2.std_dev = self.std_dev
         self.centroids.append(c2)
         self.centroid_weights.append(1)
+        self.moving_centroids.append(MovingCentroid(c2, c2.centre, center_2, width))
+
+    def incremental_moving(
+        self, class_1: int, proportions: float = 1.0, width: int = 100
+    ):
+        class_centroids = [c for c in self.centroids if c.class_label == class_1]
+        to_be_moved = self.rng_model.sample(
+            class_centroids, k=int(len(class_centroids) * proportions)
+        )
+
+        # print(to_be_moved)
+        for i in range(int(len(to_be_moved))):
+            rand_centre = None
+            while not self._compute_nearest(rand_centre):
+                rand_centre = []
+                for j in range(self.n_num_features):
+                    rand_centre.append(self.rng_model.uniform(-1, 1))
+
+            # print(rand_centre)
+
+            self.moving_centroids.append(
+                MovingCentroid(
+                    to_be_moved[i], to_be_moved[i].centre, rand_centre, width
+                )
+            )
+
+        # print(self.moving_centroids)
+
+    def __iter__(self):
+        rng_sample = random.Random(self.seed_sample)
+
+        while True:
+            x, y = self._generate_sample(rng_sample)
+            yield x, y
+
+
+class MovingCentroid:
+    def __init__(self, c: Centroid, centre_1: list, centre_2: list, width: int) -> None:
+        self.c = c
+        self.centre_1 = centre_1.copy()
+        self.centre_2 = centre_2
+        self.width = width
+        self.instanceCount = 0
+
+    def update(self):
+        try:
+            factor = -4.0 * (1 - (self.instanceCount) / self.width)
+            factor = 1.0 / (1.0 + math.exp(factor))
+        except:
+            factor = 0
+        # print(factor)
+
+        for i in range(0, len(self.centre_1)):
+            self.c.centre[i] = (
+                factor * self.centre_1[i] + (1 - factor) * self.centre_2[i]
+            )
+
+        self.instanceCount += 1
