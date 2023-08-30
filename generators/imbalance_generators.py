@@ -2,6 +2,15 @@ import random
 from river import datasets
 
 
+def getClassRatios(n_classes: int, imbalance: bool = True):
+    if not imbalance:
+        return [1 / n_classes for i in range(n_classes)]
+    else:
+        proportions = [1] * n_classes
+        proportions[len(proportions) - 1] = 1 / n_classes
+        return [proportions[i] / sum(proportions) for i in range(0, n_classes)]
+
+
 class BinaryImbalancedStream(datasets.base.SyntheticDataset):
     def __init__(
         self,

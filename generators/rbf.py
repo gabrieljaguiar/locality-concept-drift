@@ -103,6 +103,16 @@ class RandomRBFMC(RandomRBF):
         for c in class_2_centroid:
             c.class_label = class_1
 
+    def remove_cluster(self, class_1: int, proportions: float = 0.5):
+        class_1_centroids = [c for c in self.centroids if c.class_label == class_1]
+        to_be_removed_clusters = self.rng_model.sample(
+            class_1_centroids, k=int(len(class_1_centroids) * proportions)
+        )
+        for c in to_be_removed_clusters:
+            index = self.centroids.index(c)
+            self.centroids.remove(c)
+            self.centroid_weights.pop(index)
+
     def add_cluster(self, class_1: int, weight: float = 1.0):
         self.centroids.append(Centroid())
         i = len(self.centroids) - 1
@@ -133,7 +143,7 @@ class RandomRBFMC(RandomRBF):
         self,
         class_1: int,
         class_2: int,
-        shift_mag: float = 0.2,
+        shift_mag: float = 0.3,
         width: int = 1,
         proportion: float = 0.5,
     ):
@@ -142,11 +152,11 @@ class RandomRBFMC(RandomRBF):
             c = self.rng_model.choice(class_centroids)
             class_centroids.remove(c)
             centroid = c.centre
-            shift = self.rng_model.uniform(0.05, shift_mag)
+            shift = self.rng_model.uniform(0.1, shift_mag)
 
             start_center = centroid.copy()
-            center_1 = [(att + shift_mag) for att in centroid]
-            center_2 = [(att - shift_mag) for att in centroid]
+            center_1 = [(att + shift) for att in centroid]
+            center_2 = [(att - shift) for att in centroid]
 
             index = self.centroids.index(c)
             self.centroids.remove(c)
@@ -185,12 +195,12 @@ class RandomRBFMC(RandomRBF):
                 c_2 = self.rng_model.choice(class_centroids_2)
                 class_centroids_2.remove(c_2)
 
-        center = [
-            (c_1.centre[i] + c_2.centre[i]) / 2 for i in range(0, len(c_1.centre))
-        ]
+            center = [
+                (c_1.centre[i] + c_2.centre[i]) / 2 for i in range(0, len(c_1.centre))
+            ]
 
-        self.moving_centroids.append(MovingCentroid(c_1, c_1.centre, center, width))
-        self.moving_centroids.append(MovingCentroid(c_2, c_2.centre, center, width))
+            self.moving_centroids.append(MovingCentroid(c_1, c_1.centre, center, width))
+            self.moving_centroids.append(MovingCentroid(c_2, c_2.centre, center, width))
 
     def incremental_moving(
         self, class_1: int, proportions: float = 1.0, width: int = 100
@@ -236,15 +246,18 @@ class MovingCentroid:
 
     def update(self):
         try:
-            factor = -4.0 * (1 - (self.instanceCount) / self.width)
-            factor = 1.0 / (1.0 + math.exp(factor))
+            factor = min(self.instanceCount / self.width, 1)
         except:
             factor = 0
         # print(factor)
-
+        print(factor)
         for i in range(0, len(self.centre_1)):
-            self.c.centre[i] = (
-                factor * self.centre_1[i] + (1 - factor) * self.centre_2[i]
-            )
+            self.c.centre[i] = (1 - factor) * self.centre_1[i] + (
+                factor
+            ) * self.centre_2[i]
 
         self.instanceCount += 1
+
+
+# 0.99 -> 0
+# 0.01 -> self.width
