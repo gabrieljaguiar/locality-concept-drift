@@ -3,7 +3,7 @@ library(gapminder)
 library(gganimate)
 library (plotly)
 
-data <- read.csv("../merging_cluster.csv")
+data <- read.csv("../emerging_branch.csv")
 colnames(data) <- c("x_1", "x_2", "class")
 
 data$class <- as.factor(data$class)

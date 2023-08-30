@@ -249,8 +249,7 @@ class MovingCentroid:
             factor = min(self.instanceCount / self.width, 1)
         except:
             factor = 0
-        # print(factor)
-        print(factor)
+
         for i in range(0, len(self.centre_1)):
             self.c.centre[i] = (1 - factor) * self.centre_1[i] + (
                 factor
