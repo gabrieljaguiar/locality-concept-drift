@@ -130,37 +130,67 @@ class RandomRBFMC(RandomRBF):
             self.centroid_weights.pop(index)
 
     def split_cluster(
-        self, class_1: int, class_2: int, shift_mag: float = 0.2, width: int = 1
+        self,
+        class_1: int,
+        class_2: int,
+        shift_mag: float = 0.2,
+        width: int = 1,
+        proportion: float = 0.5,
     ):
         class_centroids = [c for c in self.centroids if c.class_label == class_1]
-        c = self.rng_model.choice(class_centroids)
-        centroid = c.centre
-        shift = self.rng_model.uniform(0.05, shift_mag)
+        for j in range(0, int(len(class_centroids) * proportion)):
+            c = self.rng_model.choice(class_centroids)
+            class_centroids.remove(c)
+            centroid = c.centre
+            shift = self.rng_model.uniform(0.05, shift_mag)
 
-        start_center = centroid.copy()
-        center_1 = [(att + shift_mag) for att in centroid]
-        center_2 = [(att - shift_mag) for att in centroid]
+            start_center = centroid.copy()
+            center_1 = [(att + shift_mag) for att in centroid]
+            center_2 = [(att - shift_mag) for att in centroid]
 
-        index = self.centroids.index(c)
-        self.centroids.remove(c)
-        self.centroid_weights.pop(index)
-        c1 = Centroid()
-        c2 = Centroid()
+            index = self.centroids.index(c)
+            self.centroids.remove(c)
+            self.centroid_weights.pop(index)
+            c1 = Centroid()
+            c2 = Centroid()
 
-        c1.centre = start_center
-        c1.class_label = class_1
-        c1.std_dev = self.std_dev
-        self.centroids.append(c1)
-        self.centroid_weights.append(1)
+            c1.centre = start_center
+            c1.class_label = class_1
+            c1.std_dev = self.std_dev
+            self.centroids.append(c1)
+            self.centroid_weights.append(1)
 
-        self.moving_centroids.append(MovingCentroid(c1, c1.centre, center_1, width))
+            self.moving_centroids.append(MovingCentroid(c1, c1.centre, center_1, width))
 
-        c2.centre = start_center
-        c2.class_label = class_2
-        c2.std_dev = self.std_dev
-        self.centroids.append(c2)
-        self.centroid_weights.append(1)
-        self.moving_centroids.append(MovingCentroid(c2, c2.centre, center_2, width))
+            c2.centre = start_center
+            c2.class_label = class_2
+            c2.std_dev = self.std_dev
+            self.centroids.append(c2)
+            self.centroid_weights.append(1)
+            self.moving_centroids.append(MovingCentroid(c2, c2.centre, center_2, width))
+
+    def merge_cluster(
+        self, class_1: int, class_2: int, width: int = 1, proportion: float = 0.5
+    ):
+        class_centroids_1 = [c for c in self.centroids if c.class_label == class_1]
+
+        class_centroids_2 = [c for c in self.centroids if c.class_label == class_2]
+        for j in range(0, int(len(class_centroids_1) * proportion)):
+            c_1 = self.rng_model.choice(class_centroids_1)
+            class_centroids_1.remove(c_1)
+            if class_1 == class_2:
+                c_2 = self.rng_model.choice(class_centroids_1)
+                class_centroids_1.remove(c_2)
+            else:
+                c_2 = self.rng_model.choice(class_centroids_2)
+                class_centroids_2.remove(c_2)
+
+        center = [
+            (c_1.centre[i] + c_2.centre[i]) / 2 for i in range(0, len(c_1.centre))
+        ]
+
+        self.moving_centroids.append(MovingCentroid(c_1, c_1.centre, center, width))
+        self.moving_centroids.append(MovingCentroid(c_2, c_2.centre, center, width))
 
     def incremental_moving(
         self, class_1: int, proportions: float = 1.0, width: int = 100
