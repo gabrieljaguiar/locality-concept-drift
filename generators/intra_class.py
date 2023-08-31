@@ -30,7 +30,7 @@ def emerging_cluster(
         std_dev=0.1,
     )
 
-    for j in range(0, int(proportions * n_centroids)):
+    for j in range(0, int(proportions * n_centroids / n_classes)):
         base_stream_2.add_cluster(n_classes - 1)
 
     return ConceptDriftStream(
