@@ -27,6 +27,7 @@ def emerging_cluster(
     classes_affected: list,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     n_centroids = max(n_features * n_classes, 24)
 
@@ -53,6 +54,7 @@ def reappearing_cluster(
     classes_affected: list,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     imb_r = getClassRatios(n_classes, imbalance)
 
@@ -64,7 +66,6 @@ def reappearing_cluster(
 
     if proportions == 1:
         x = (1 / (n_classes - len(classes_affected))) - (1 / n_classes)
-        print(x)
         imb_r = [i + x for i in imb_r]
         for c in classes_affected:
             imb_r[c] = 0
@@ -94,6 +95,7 @@ def splitting_cluster(
     incremental_width: int = 1,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     n_centroids = max(n_features * n_classes, 24)
 
@@ -121,6 +123,7 @@ def merging_cluster(
     incremental_width: int = 1,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     base_stream_1 = get_base_rbf(n_classes, n_features)
 
@@ -147,6 +150,7 @@ def moving_cluster(
     incremental_width: int = 1,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     n_centroids = max(n_features * n_classes, 24)
 
@@ -168,13 +172,14 @@ def moving_cluster(
     )
 
 
-def swapping_cluster(
+def swap_cluster(
     n_classes: int,
     n_features: int,
     width: int,
     classes_affected: list,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     n_centroids = max(n_features * n_classes, 24)
 
@@ -203,6 +208,7 @@ def emerging_branch(
     classes_affected: list,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     base_stream_1 = RandomTreeMC(
         42,
@@ -243,6 +249,7 @@ def prune_regrowth_branch(
     classes_affected: list,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     imb_r = getClassRatios(n_classes, imbalance)
 
@@ -269,7 +276,6 @@ def prune_regrowth_branch(
 
     if proportions == 1:
         x = (1 / (n_classes - len(classes_affected))) - (1 / n_classes)
-        print(x)
         imb_r = [i + x for i in imb_r]
         for c in classes_affected:
             imb_r[c] = 0
@@ -301,6 +307,7 @@ def prune_growth_new_branch(
     classes_affected: list,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     base_stream_1 = RandomTreeMC(
         42,
@@ -323,10 +330,8 @@ def prune_growth_new_branch(
         first_leaf_level=9,
     )
     for c in classes_affected:
-        base_stream_2.prune_class(n_classes - 1, fraction=proportions)
-        base_stream_2.create_new_node(
-            n_classes - 1, fraction=proportions, overlap=False
-        )
+        base_stream_2.prune_class(c, fraction=proportions)
+        base_stream_2.create_new_node(c, fraction=proportions, overlap=False)
 
     return ConceptDriftStream(
         MultiClassImbalancedStream(base_stream_1, getClassRatios(n_classes, imbalance)),
@@ -344,6 +349,7 @@ def split_node(
     classes_affected: list,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     base_stream_1 = RandomTreeMC(
         42,
@@ -387,6 +393,7 @@ def swap_leaves(
     classes_affected: list,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     base_stream_1 = RandomTreeMC(
         42,
@@ -421,3 +428,106 @@ def swap_leaves(
         position=SIZE / 2,
         size=SIZE,
     )
+
+
+def generate_streams(
+    n_classes: [list, int],
+    n_features: [list, int],
+    drift_width: [list, int],
+    n_classes_affected: int,
+    locality: str = None,
+    generators: list = None,
+    imbalance: bool = False,
+    methods: list = None,
+):
+    if generators == None:
+        generators = ["rbf", "rt"]
+
+    rbf_local = [
+        "emerging_cluster",
+        "reappearing_cluster",
+        "splitting_cluster",
+        "merging_cluster",
+        "moving_cluster",
+        "swap_cluster",
+    ]
+    rbf_global = [
+        "reappearing_cluster",
+        "moving_cluster",
+        "splitting_cluster",
+        "merging_cluster",
+        "swap_cluster",
+    ]
+    rt_local = [
+        "emerging_branch",
+        "prune_regrowth_branch",
+        "prune_growth_new_branch",
+        "split_node",
+        "swap_leaves",
+    ]
+    rt_global = [
+        "prune_regrowth_branch",
+        "prune_growth_new_branch",
+        "split_node",
+        "swap_leaves",
+    ]
+    if locality == "global":
+        proportion = 1
+    else:
+        proportion = 0.3
+    incremental_width = 2500
+
+    if methods == None:
+        methods = []
+        for g in generators:
+            if locality == "local" and g == "rt":
+                methods = methods + rt_local
+            if locality == "local" and g == "rbf":
+                methods = methods + rbf_local
+            if locality == "global" and g == "rt":
+                methods = methods + rt_global
+            if locality == "global" and g == "rbf":
+                methods = methods + rbf_global
+    functions = globals()
+    # print(functions)
+
+    streams = []
+    for n_class in n_classes:
+        classes_affected = []
+
+        if n_classes == n_classes_affected:
+            classes_affected = [i for i in range(0, n_class)]
+        else:
+            classes_affected = [i for i in range(n_class - n_classes_affected, n_class)]
+
+        for n_feat in n_features:
+            for ds in drift_width:
+                for m in methods:
+                    func = functions[m]
+                    if imbalance == False:
+                        stream_name = "multi_class_{}_{}_{}_c_{}_f_{}_1_{}".format(
+                            locality, m, ds, n_class, n_feat, 1
+                        )
+                    else:
+                        stream_name = "multi_class_{}_{}_{}_c_{}_f_{}_1_{}".format(
+                            locality, m, ds, n_class, n_feat, n_class
+                        )
+
+                    kwargs = {
+                        "n_classes": n_class,
+                        "n_features": n_feat,
+                        "width": ds,
+                        "incremental_width": incremental_width,
+                        "imbalance": imbalance,
+                        "proportions": proportion,
+                        "classes_affected": classes_affected,
+                    }
+
+                    streams.append(
+                        (
+                            stream_name,
+                            func(**kwargs),
+                        )
+                    )
+
+    return streams

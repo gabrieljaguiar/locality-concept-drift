@@ -21,7 +21,12 @@ def get_base_rbf(n_classes, n_features):
 
 
 def emerging_cluster(
-    n_classes, n_features, width, proportions: float = 0.5, imbalance: bool = False
+    n_classes,
+    n_features,
+    width,
+    proportions: float = 0.5,
+    imbalance: bool = False,
+    **kwargs,
 ):
     n_centroids = max(n_features * n_classes, 24)
 
@@ -41,7 +46,12 @@ def emerging_cluster(
 
 
 def reappearing_cluster(
-    n_classes, n_features, width, proportions: float = 0.5, imbalance: bool = False
+    n_classes,
+    n_features,
+    width,
+    proportions: float = 0.5,
+    imbalance: bool = False,
+    **kwargs,
 ):
     n_centroids = max(n_features * n_classes, 24)
 
@@ -80,6 +90,7 @@ def splitting_cluster(
     incremental_width: int = 1,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     n_centroids = max(n_features * n_classes, 24)
 
@@ -155,11 +166,12 @@ def moving_cluster(
     )
 
 
-def class_emerging(
+def class_emerging_rbf(
     n_classes: int,
     n_features: int,
     width: int,
     imbalance: bool = False,
+    **kwargs,
 ):
     base_stream_1 = get_base_rbf(n_classes, n_features)
     imb_r = getClassRatios(n_classes - 1, imbalance)
@@ -183,6 +195,7 @@ def emerging_branch(
     width: int,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     base_stream_1 = RandomTreeMC(
         42,
@@ -223,6 +236,7 @@ def prune_regrowth_branch(
     width: int,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     imb_r = getClassRatios(n_classes, imbalance)
 
@@ -277,6 +291,7 @@ def prune_growth_new_branch(
     width: int,
     proportions: float = 0.5,
     imbalance: bool = False,
+    **kwargs,
 ):
     base_stream_1 = RandomTreeMC(
         42,
@@ -309,3 +324,132 @@ def prune_growth_new_branch(
         position=SIZE / 2,
         size=SIZE,
     )
+
+
+def class_emerging_rt(
+    n_classes: int,
+    n_features: int,
+    width: int,
+    imbalance: bool = False,
+    **kwargs,
+):
+    base_stream_1 = RandomTreeMC(
+        42,
+        42,
+        n_classes=n_classes,
+        n_num_features=n_features,
+        n_cat_features=0,
+        n_categories_per_feature=0,
+        max_tree_depth=10,
+        first_leaf_level=9,
+    )
+    imb_r = getClassRatios(n_classes - 1, imbalance)
+    imb_r.append(0)
+
+    base_stream_2 = RandomTreeMC(
+        42,
+        42,
+        n_classes=n_classes,
+        n_num_features=n_features,
+        n_cat_features=0,
+        n_categories_per_feature=0,
+        max_tree_depth=10,
+        first_leaf_level=9,
+    )
+
+    return ConceptDriftStream(
+        MultiClassImbalancedStream(base_stream_1, imb_r),
+        MultiClassImbalancedStream(base_stream_2, getClassRatios(n_classes, imbalance)),
+        width=width,
+        position=SIZE / 2,
+        size=SIZE,
+    )
+
+
+"""Options: LOCAL, GLOBAL, IMBALANCED, GENERATOR"""
+
+
+def generate_streams(
+    n_classes: [list, int],
+    n_features: [list, int],
+    drift_width: [list, int],
+    locality: str = None,
+    generators: list = None,
+    imbalance: bool = False,
+    methods: list = None,
+):
+    if generators == None:
+        generators = ["rbf", "rt"]
+
+    rbf_local = [
+        "emerging_cluster",
+        "reappearing_cluster",
+        "splitting_cluster",
+        "merging_cluster",
+        "moving_cluster",
+    ]
+    rbf_global = [
+        "reappearing_cluster",
+        "moving_cluster",
+        "splitting_cluster",
+        "merging_cluster",
+        "class_emerging_rbf",
+    ]
+    rt_local = ["emerging_branch", "prune_regrowth_branch", "prune_growth_new_branch"]
+    rt_global = [
+        "prune_regrowth_branch",
+        "prune_growth_new_branch",
+        "class_emerging_rt",
+    ]
+    if locality == "global":
+        proportion = 1
+    else:
+        proportion = 0.3
+    incremental_width = 2500
+
+    if methods == None:
+        methods = []
+        for g in generators:
+            if locality == "local" and g == "rt":
+                methods = methods + rt_local
+            if locality == "local" and g == "rbf":
+                methods = methods + rbf_local
+            if locality == "global" and g == "rt":
+                methods = methods + rt_global
+            if locality == "global" and g == "rbf":
+                methods = methods + rbf_global
+    functions = globals()
+    # print(functions)
+
+    streams = []
+    for n_class in n_classes:
+        for n_feat in n_features:
+            for ds in drift_width:
+                for m in methods:
+                    func = functions[m]
+                    if imbalance == False:
+                        stream_name = "single_class_{}_{}_{}_c_{}_f_{}_1_{}".format(
+                            locality, m, ds, n_class, n_feat, 1
+                        )
+                    else:
+                        stream_name = "single_class_{}_{}_{}_c_{}_f_{}_1_{}".format(
+                            locality, m, ds, n_class, n_feat, n_class
+                        )
+
+                    kwargs = {
+                        "n_classes": n_class,
+                        "n_features": n_feat,
+                        "width": ds,
+                        "incremental_width": incremental_width,
+                        "imbalance": imbalance,
+                        "proportions": proportion,
+                    }
+
+                    streams.append(
+                        (
+                            stream_name,
+                            func(**kwargs),
+                        )
+                    )
+
+    return streams

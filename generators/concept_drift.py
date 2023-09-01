@@ -81,6 +81,7 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
         self.instanceCount = 0
         self.size = size
         self.name = initialStream.__class__
+        self.seed = seed
         self._rng = random.Random(seed)
         super().__init__(
             self.initialStream.task,
@@ -89,6 +90,14 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
             self.initialStream.n_classes,
             self.initialStream.n_outputs,
         )
+
+    def __str__(self):
+        out = "<object, at 0x{}>".format(id(self))
+        return out
+
+    def __repr__(self):
+        out = "<object, at 0x{}>".format(id(self))
+        return out
 
     def __iter__(self):
         self.initialStreamIterator = iter(self.initialStream)
