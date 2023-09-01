@@ -6,6 +6,20 @@ from .concept_drift import ConceptDriftStream
 SIZE = 100000
 
 
+def get_base_rbf(n_classes, n_features):
+    n_centroids = max(n_features * n_classes, 24)
+
+    return RandomRBFMC(
+        42,
+        42,
+        n_classes=n_classes,
+        n_features=n_features,
+        n_centroids=n_centroids,
+        min_distance=0.15,
+        std_dev=0.1,
+    )
+
+
 def emerging_cluster(
     n_classes,
     n_features,
@@ -16,24 +30,8 @@ def emerging_cluster(
 ):
     n_centroids = max(n_features * n_classes, 24)
 
-    base_stream_1 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
-    base_stream_2 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
+    base_stream_1 = get_base_rbf(n_classes, n_features)
+    base_stream_2 = get_base_rbf(n_classes, n_features)
 
     for c in classes_affected:
         for j in range(0, int(proportions * n_centroids / n_classes)):
@@ -56,28 +54,11 @@ def reappearing_cluster(
     proportions: float = 0.5,
     imbalance: bool = False,
 ):
-    n_centroids = max(n_features * n_classes, 24)
-
     imb_r = getClassRatios(n_classes, imbalance)
 
-    base_stream_1 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
-    base_stream_2 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
+    base_stream_1 = get_base_rbf(n_classes, n_features)
+    base_stream_2 = get_base_rbf(n_classes, n_features)
+
     for c in classes_affected:
         base_stream_2.remove_cluster(c, proportions=proportions)
 
@@ -116,24 +97,8 @@ def splitting_cluster(
 ):
     n_centroids = max(n_features * n_classes, 24)
 
-    base_stream_1 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
-    base_stream_2 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
+    base_stream_1 = get_base_rbf(n_classes, n_features)
+    base_stream_2 = get_base_rbf(n_classes, n_features)
     for c in classes_affected:
         base_stream_2.split_cluster(
             c, c, width=incremental_width, proportion=proportions
@@ -157,29 +122,9 @@ def merging_cluster(
     proportions: float = 0.5,
     imbalance: bool = False,
 ):
-    n_centroids = max(n_features * n_classes, 24)
+    base_stream_1 = get_base_rbf(n_classes, n_features)
 
-    # class_ratios =
-
-    base_stream_1 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
-
-    base_stream_2 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
+    base_stream_2 = get_base_rbf(n_classes, n_features)
 
     for c in classes_affected:
         base_stream_2.merge_cluster(
@@ -205,25 +150,9 @@ def moving_cluster(
 ):
     n_centroids = max(n_features * n_classes, 24)
 
-    base_stream_1 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
+    base_stream_1 = get_base_rbf(n_classes, n_features)
 
-    base_stream_2 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
+    base_stream_2 = get_base_rbf(n_classes, n_features)
 
     for c in classes_affected:
         base_stream_2.incremental_moving(
@@ -249,25 +178,9 @@ def swapping_cluster(
 ):
     n_centroids = max(n_features * n_classes, 24)
 
-    base_stream_1 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
+    base_stream_1 = get_base_rbf(n_classes, n_features)
 
-    base_stream_2 = RandomRBFMC(
-        42,
-        42,
-        n_classes=n_classes,
-        n_features=n_features,
-        n_centroids=n_centroids,
-        min_distance=0.15,
-        std_dev=0.1,
-    )
+    base_stream_2 = get_base_rbf(n_classes, n_features)
 
     for i in range(0, len(classes_affected) - 1):
         base_stream_2.swap_clusters(
@@ -455,7 +368,7 @@ def split_node(
 
     for i in range(0, len(classes_affected) - 1):
         base_stream_2.split_node(
-            classes_affected[i], classes_affected[i + 1], proportions=proportions
+            classes_affected[i], classes_affected[i + 1], fraction=proportions
         )
 
     return ConceptDriftStream(
@@ -498,7 +411,7 @@ def swap_leaves(
 
     for i in range(0, len(classes_affected) - 1):
         base_stream_2.swap_leafs(
-            classes_affected[i], classes_affected[i + 1], proportions=proportions
+            classes_affected[i], classes_affected[i + 1], fraction=proportions
         )
 
     return ConceptDriftStream(
