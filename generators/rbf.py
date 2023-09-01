@@ -183,9 +183,16 @@ class RandomRBFMC(RandomRBF):
         self, class_1: int, class_2: int, width: int = 1, proportion: float = 0.5
     ):
         class_centroids_1 = [c for c in self.centroids if c.class_label == class_1]
+        if len(class_centroids_1) % 2 != 0:
+            class_centroids_1.pop(0)
 
         class_centroids_2 = [c for c in self.centroids if c.class_label == class_2]
-        for j in range(0, int(len(class_centroids_1) * proportion)):
+        if len(class_centroids_2) % 2 != 0:
+            class_centroids_2.pop(0)
+
+        n_merges = int(len(class_centroids_1) * proportion / 2)
+
+        for j in range(0, n_merges):
             c_1 = self.rng_model.choice(class_centroids_1)
             class_centroids_1.remove(c_1)
             if class_1 == class_2:

@@ -70,7 +70,7 @@ def reappearing_cluster(
     base_stream_2.remove_cluster(n_classes - 1, proportions=proportions)
 
     if proportions == 1:
-        x = (1 / n_classes) / (n_classes - 1)
+        x = (1 / (n_classes - 1)) - (1 / n_classes)
         imb_r = [i + x for i in imb_r]
         imb_r[n_classes - 1] = 0
 
@@ -290,7 +290,9 @@ def emerging_branch(
         max_tree_depth=10,
         first_leaf_level=9,
     )
-    base_stream_2.create_new_node(n_classes - 1, fraction=0.3)  # adding new branches
+    base_stream_2.create_new_node(
+        n_classes - 1, fraction=proportions
+    )  # adding new branches
 
     return ConceptDriftStream(
         MultiClassImbalancedStream(base_stream_1, getClassRatios(n_classes, imbalance)),
@@ -332,7 +334,7 @@ def prune_regrowth_branch(
     )
 
     if proportions == 1:
-        x = (1 / n_classes) / (n_classes - 1)
+        x = (1 / (n_classes - 1)) - (1 / n_classes)
         imb_r = [i + x for i in imb_r]
         imb_r[n_classes - 1] = 0
 
