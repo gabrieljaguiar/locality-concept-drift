@@ -8,6 +8,8 @@ import os
 def save_stream(stream: SyntheticDataset, file: str, size: int):
     # if os.path.exists(file):
     #    return
+    if stream is None:
+        return
     stream_df_x = []
     stream_df_y = []
     for i, (x, y) in enumerate(stream.take(size)):

@@ -95,7 +95,7 @@ class RandomRBFMC(RandomRBF):
             class_1_centroids, k=int(len(class_1_centroids) * proportions)
         )
         class_2_centroid = self.rng_model.sample(
-            class_2_centroids, k=int(len(class_1_centroids) * proportions)
+            class_2_centroids, k=int(len(class_2_centroids) * proportions)
         )
 
         for c in class_1_centroid:

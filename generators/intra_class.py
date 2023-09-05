@@ -428,12 +428,16 @@ def generate_streams(
                 for m in methods:
                     func = functions[m]
                     if imbalance == False:
-                        stream_name = "single_class_{}_{}_{}_c_{}_f_{}_1_{}".format(
-                            locality, m, ds, n_class, n_feat, 1
+                        stream_name = (
+                            "single_class_{}_{}_ds_{}_c_{}_ca_{}_f_{}_1_{}".format(
+                                locality, m, ds, n_class, 1, n_feat, 1
+                            )
                         )
                     else:
-                        stream_name = "single_class_{}_{}_{}_c_{}_f_{}_1_{}".format(
-                            locality, m, ds, n_class, n_feat, n_class
+                        stream_name = (
+                            "single_class_{}_{}_ds_{}_c_{}_ca_{}_f_{}_1_{}".format(
+                                locality, m, ds, n_class, 1, n_feat, n_class
+                            )
                         )
 
                     kwargs = {

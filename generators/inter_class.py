@@ -56,6 +56,8 @@ def reappearing_cluster(
     imbalance: bool = False,
     **kwargs,
 ):
+    if n_classes == len(classes_affected):
+        return None
     imb_r = getClassRatios(n_classes, imbalance)
 
     base_stream_1 = get_base_rbf(n_classes, n_features)
@@ -251,6 +253,8 @@ def prune_regrowth_branch(
     imbalance: bool = False,
     **kwargs,
 ):
+    if n_classes == len(classes_affected):
+        return None
     imb_r = getClassRatios(n_classes, imbalance)
 
     base_stream_1 = RandomTreeMC(
@@ -434,7 +438,7 @@ def generate_streams(
     n_classes: [list, int],
     n_features: [list, int],
     drift_width: [list, int],
-    n_classes_affected: int,
+    classes_affected: list,
     locality: str = None,
     generators: list = None,
     imbalance: bool = False,
@@ -493,41 +497,60 @@ def generate_streams(
 
     streams = []
     for n_class in n_classes:
-        classes_affected = []
+        idx = n_classes.index(n_class)
+        spec_classes_affected = classes_affected[idx]
+        for n_classes_affected in spec_classes_affected:
+            if n_classes == n_classes_affected:
+                list_classes_affected = [i for i in range(0, n_class)]
+            else:
+                list_classes_affected = [
+                    i for i in range(n_class - n_classes_affected, n_class)
+                ]
 
-        if n_classes == n_classes_affected:
-            classes_affected = [i for i in range(0, n_class)]
-        else:
-            classes_affected = [i for i in range(n_class - n_classes_affected, n_class)]
+            for n_feat in n_features:
+                for ds in drift_width:
+                    for m in methods:
+                        func = functions[m]
+                        if imbalance == False:
+                            stream_name = (
+                                "multi_class_{}_{}_ds_{}_c_{}_ca_{}_f_{}_1_{}".format(
+                                    locality,
+                                    m,
+                                    ds,
+                                    n_class,
+                                    n_classes_affected,
+                                    n_feat,
+                                    1,
+                                )
+                            )
+                        else:
+                            stream_name = (
+                                "multi_class_{}_{}_ds_{}_c_{}_ca_{}_f_{}_1_{}".format(
+                                    locality,
+                                    m,
+                                    ds,
+                                    n_class,
+                                    n_classes_affected,
+                                    n_feat,
+                                    n_class,
+                                )
+                            )
 
-        for n_feat in n_features:
-            for ds in drift_width:
-                for m in methods:
-                    func = functions[m]
-                    if imbalance == False:
-                        stream_name = "multi_class_{}_{}_{}_c_{}_f_{}_1_{}".format(
-                            locality, m, ds, n_class, n_feat, 1
+                        kwargs = {
+                            "n_classes": n_class,
+                            "n_features": n_feat,
+                            "width": ds,
+                            "incremental_width": incremental_width,
+                            "imbalance": imbalance,
+                            "proportions": proportion,
+                            "classes_affected": list_classes_affected,
+                        }
+
+                        streams.append(
+                            (
+                                stream_name,
+                                func(**kwargs),
+                            )
                         )
-                    else:
-                        stream_name = "multi_class_{}_{}_{}_c_{}_f_{}_1_{}".format(
-                            locality, m, ds, n_class, n_feat, n_class
-                        )
-
-                    kwargs = {
-                        "n_classes": n_class,
-                        "n_features": n_feat,
-                        "width": ds,
-                        "incremental_width": incremental_width,
-                        "imbalance": imbalance,
-                        "proportions": proportion,
-                        "classes_affected": classes_affected,
-                    }
-
-                    streams.append(
-                        (
-                            stream_name,
-                            func(**kwargs),
-                        )
-                    )
 
     return streams
