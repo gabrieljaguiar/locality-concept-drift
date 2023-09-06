@@ -24,12 +24,9 @@ class Evaluator:
     def addResult(self, instance: Dict[float, int], probabilties: Dict):
         _, y = instance
         # print(probabilties)
-        classVotes = [
-            probabilties.get(list(probabilties.keys())[i])
-            for i in range(self.numberOfClasses)
-        ]
+        classVotes = [probabilties.get(i, None) for i in range(self.numberOfClasses)]
         pred_index = classVotes.index(max(classVotes))
-        y_index = sorted(list(probabilties.keys())).index(y)
+        y_index = [i for i in range(self.numberOfClasses)].index(y)
 
         prediction = sorted(list(probabilties.keys()))[pred_index]
 

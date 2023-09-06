@@ -71,7 +71,7 @@ for model in models:
 
     random.shuffle(streams)
 
-    out = Parallel(n_jobs=2)(
+    out = Parallel(n_jobs=1)(
         delayed(task)(stream, model, dd)
         for stream, dd in itertools.product(streams, dds)
     )

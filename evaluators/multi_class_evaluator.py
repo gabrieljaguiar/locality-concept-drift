@@ -11,13 +11,9 @@ class MultiClassEvaluator(Evaluator):
 
     def addResult(self, instance: Dict[float, int], probabilties: Dict):
         _, y = instance
-        classVotes = [
-            probabilties.get(list(probabilties.keys())[i])
-            for i in range(self.numberOfClasses)
-        ]
-        # print(classVotes)
+        classVotes = [probabilties.get(i, 0) for i in range(self.numberOfClasses)]
         pred_index = classVotes.index(max(classVotes))
-        y_index = sorted(list(probabilties.keys())).index(y)
+        y_index = [i for i in range(self.numberOfClasses)].index(y)
 
         prediction = sorted(list(probabilties.keys()))[pred_index]
 
@@ -59,7 +55,11 @@ class MultiClassEvaluator(Evaluator):
     def getClassRecall(self, classIdx):
         tp = self.cm[classIdx][classIdx]
         fn = sum(self.cm[:][classIdx]) - self.cm[classIdx][classIdx]
-        return tp / (tp + fn)
+        if tp + fn:
+            recall = tp / (tp + fn)
+        else:
+            recall = 0
+        return recall
 
     def getGMean(self):
         gmean = 1
