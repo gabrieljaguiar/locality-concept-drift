@@ -11,7 +11,7 @@ from joblib import Parallel, delayed
 import itertools
 from drift_detectors import RDDM_M
 from frouros.detectors.concept_drift.streaming.statistical_process_control.rddm import (
-    RDDM,
+    RDDMConfig,
 )
 from drift_detectors import DDM_OCI, MCADWIN
 from river.stream import iter_csv
@@ -34,10 +34,11 @@ models = [
 
 dds = [
     ("ADWIN", drift.ADWIN()),
-    # ("DDM", drift.binary.DDM()),
-    # ("RDDM", RDDM_M()),
-    # ("MCADWIN", MCADWIN()),
-    # ("DDM_OCI", DDM_OCI()),
+    ("PageHinkley", drift.PageHinkley()),
+    ("HDDM", drift.binary.HDDM_W()),
+    ("KSWIN", drift.KSWIN()),
+    ("DDM", drift.binary.DDM()),
+    ("RDDM", RDDM_M(RDDMConfig())),
 ]
 
 

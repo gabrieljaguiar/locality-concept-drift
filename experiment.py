@@ -47,6 +47,7 @@ class Experiment:
 
     def run(self):
         self.metrics = []
+        self.drifts = []
         drift_detected = 0
         local_drift = 0
         if type(self.stream) == SyntheticDataset:
@@ -57,6 +58,7 @@ class Experiment:
                 self.updateDriftDetector(y, self.model.predict_one(x))
                 self.evaluator.addResult((x, y), self.model.predict_proba_one(x))
                 if self.driftDetctor.drift_detected:
+                    self.drifts.append({"idx": i, "alert": 1})
                     drift_detected += 1
                 if type(self.driftDetctor) == MCADWIN:
                     if self.driftDetctor.local_drift:
@@ -90,3 +92,6 @@ class Experiment:
 
     def save(self):
         pd.DataFrame(self.metrics).to_csv("{}/{}.csv".format(self.savePath, self.name))
+        pd.DataFrame(self.metrics).to_csv(
+            "{}/drift_alerts_{}.csv".format(self.savePath, self.name)
+        )
