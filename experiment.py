@@ -92,6 +92,6 @@ class Experiment:
 
     def save(self):
         pd.DataFrame(self.metrics).to_csv("{}/{}.csv".format(self.savePath, self.name))
-        pd.DataFrame(self.metrics).to_csv(
+        pd.DataFrame(self.drifts).to_csv(
             "{}/drift_alerts_{}.csv".format(self.savePath, self.name)
         )
