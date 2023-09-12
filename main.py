@@ -32,6 +32,7 @@ models = [
     # ("NB", naive_bayes.GaussianNB()),
 ]
 
+
 dds = [
     ("ADWIN", drift.ADWIN()),
     ("PageHinkley", drift.PageHinkley()),
