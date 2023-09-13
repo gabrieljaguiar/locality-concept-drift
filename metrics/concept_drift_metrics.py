@@ -31,7 +31,7 @@ for scenario in scenarios:
     metrics = []
     for c in classifiers:
         for dd in dds:
-                PATH = "./output/"
+                PATH = "../output/"
                 EXT = "drift_alerts_{}_{}_{}_*.csv".format(c, dd, scenario)
                 streams = [
                     file
