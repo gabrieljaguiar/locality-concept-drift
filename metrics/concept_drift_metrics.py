@@ -70,9 +70,9 @@ for scenario in scenarios:
                             else:
                                 fp +=1
                             
-                            if (drift_idx >= drift_position + TP_WINDOW and tp == 0):
-                                fn += 1
-                                delay = TP_WINDOW
+                        if (tp == 0):
+                            fn += 1
+                            delay = TP_WINDOW
                         
                         
                         metric = {
@@ -106,8 +106,9 @@ for scenario in scenarios:
 
     metric_df = pd.DataFrame(metrics)
     metric_df.sort_values(by=["scenario", "difficulty", "n_classes", "n_features", "drift_speed", "classes_affected", "drift_detector"], inplace=True)
+    metric_df.to_csv("{}_concept_drift_metrics.csv".format(scenario), index=None)
     metric_df = metric_df.pivot(index=["scenario", "difficulty", "n_classes", "n_features", "drift_speed", "classes_affected"], columns=["drift_detector"], values=["tp", "fp", "fn", "delay"])
     metric_df = metric_df.swaplevel(0, 1, axis=1).sort_index(axis=1, level=[0, 1], key=lambda x: x.map(custom_dict))
     metric_df.reset_index(inplace=True)
-    metric_df.to_csv("{}_concept_drift_metrics.csv".format(scenario), index=None)
+    metric_df.to_csv("{}_pivoted_concept_drift_metrics.csv".format(scenario), index=None)
                     
