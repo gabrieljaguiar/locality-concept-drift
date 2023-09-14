@@ -34,15 +34,15 @@ models = [
 
 
 dds = [
-    """("ADWIN", drift.ADWIN()),
-    ("PageHinkley", drift.PageHinkley()),
-    ("HDDM", drift.binary.HDDM_W()),
-    ("KSWIN", drift.KSWIN()),
-    ("DDM", drift.binary.DDM()),
-    ("RDDM", RDDM_M(RDDMConfig())),"""
-    ("STEPD", STEPD_M(STEPDConfig()))
-    ("GMA", GMA_M(GeometricMovingAverageConfig()))
-    ("ECDD", ECDDWT_M(ECDDWTConfig()))
+    #("ADWIN", drift.ADWIN()),
+    #("PageHinkley", drift.PageHinkley()),
+    ##("HDDM", drift.binary.HDDM_W()),
+    #("KSWIN", drift.KSWIN()),
+    #("DDM", drift.binary.DDM()),
+    #("RDDM", RDDM_M(RDDMConfig())),
+    ("STEPD", STEPD_M(STEPDConfig())),
+    ("GMA", GMA_M(GeometricMovingAverageConfig())),
+    ("ECDD", ECDDWT_M(ECDDWTConfig())),
     ("EDDM", EDDM_M(EDDMConfig()))
 
 ]
@@ -78,7 +78,7 @@ for model in models:
 
     random.shuffle(streams)
 
-    out = Parallel(n_jobs=1)(
+    out = Parallel(n_jobs=16)(
         delayed(task)(stream, model, dd)
         for stream, dd in itertools.product(streams, dds)
     )
