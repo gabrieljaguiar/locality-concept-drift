@@ -29,19 +29,20 @@ models = [
     #    ),
     # ),
     ("HT", tree.HoeffdingTreeClassifier()),
+    ("AHT", tree.HoeffdingAdaptiveTreeClassifier())
     # ("NB", naive_bayes.GaussianNB()),
 ]
 
 
 dds = [
-    #("ADWIN", drift.ADWIN()),
-    #("PageHinkley", drift.PageHinkley()),
-    ##("HDDM", drift.binary.HDDM_W()),
-    #("KSWIN", drift.KSWIN()),
-    #("DDM", drift.binary.DDM()),
-    #("RDDM", RDDM_M(RDDMConfig())),
+    ("ADWIN", drift.ADWIN()),
+    ("PageHinkley", drift.PageHinkley()),
+    ("HDDM", drift.binary.HDDM_W()),
+    ("KSWIN", drift.KSWIN()),
+    ("DDM", drift.binary.DDM()),
+    ("RDDM", RDDM_M(RDDMConfig())),
     ("STEPD", STEPD_M(STEPDConfig())),
-    ("GMA", GMA_M(GeometricMovingAverageConfig())),
+    #("GMA", GMA_M(GeometricMovingAverageConfig())),
     ("ECDD", ECDDWT_M(ECDDWTConfig())),
     ("EDDM", EDDM_M(EDDMConfig()))
 

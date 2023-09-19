@@ -1,5 +1,6 @@
 from river.datasets.base import SyntheticDataset
 from river.base import DriftDetector, Classifier
+from river.tree import HoeffdingAdaptiveTreeClassifier
 from evaluators.multi_class_evaluator import MultiClassEvaluator
 import pandas as pd
 from tqdm import tqdm
@@ -23,7 +24,7 @@ class Experiment:
         self.name = name
         self.savePath = savePath
         self.model = model
-        self.driftDetctor = driftDetector
+        self.driftDetector = driftDetector
         self.stream = stream
         self.size = stream_size
         if stream_size is None:
@@ -33,17 +34,19 @@ class Experiment:
         self.gracePeriod = 200
         self.theta = theta
         self.classProportions: list = [0] * self.stream.n_classes
+        if (type(self.model) == HoeffdingAdaptiveTreeClassifier):
+            self.model.drift_detector = self.driftDetector.clone()
 
     def updateDriftDetector(self, y, y_hat):  # DDM
         x = 1 if (y == y_hat) else 0
-        if (type(self.driftDetctor) == DDM_OCI) and (
+        if (type(self.driftDetector) == DDM_OCI) and (
             y == self.classProportions.index(min(self.classProportions))
         ):
-            self.driftDetctor.update(x)
-        if type(self.driftDetctor) == MCADWIN:
-            self.driftDetctor.update(y, y == y_hat)
+            self.driftDetector.update(x)
+        if type(self.driftDetector) == MCADWIN:
+            self.driftDetector.update(y, y == y_hat)
         else:
-            self.driftDetctor.update(x)
+            self.driftDetector.update(x)
 
     def run(self):
         self.metrics = []
@@ -57,11 +60,11 @@ class Experiment:
             if i > self.gracePeriod:
                 self.updateDriftDetector(y, self.model.predict_one(x))
                 self.evaluator.addResult((x, y), self.model.predict_proba_one(x))
-                if self.driftDetctor.drift_detected:
+                if self.driftDetector.drift_detected:
                     self.drifts.append({"idx": i, "alert": 1})
                     drift_detected += 1
-                if type(self.driftDetctor) == MCADWIN:
-                    if self.driftDetctor.local_drift:
+                if type(self.driftDetector) == MCADWIN:
+                    if self.driftDetector.local_drift:
                         local_drift += 1
 
                 if (i + 1) % self.evaluationWindow == 0:
