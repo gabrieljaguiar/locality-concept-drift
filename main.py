@@ -1,4 +1,4 @@
-from river import ensemble, preprocessing, tree, drift, naive_bayes
+from river import tree, drift, naive_bayes
 from river.datasets.synth import RandomRBF
 from generators.concept_drift import ConceptDriftStream
 from generators.multi_class_drift import MultiClassDrift
@@ -28,7 +28,7 @@ models = [
     #        seed=42,
     #    ),
     # ),
-    ("HT", tree.HoeffdingTreeClassifier()),
+    #("HT", tree.HoeffdingTreeClassifier()),
     ("AHT", tree.HoeffdingAdaptiveTreeClassifier())
     # ("NB", naive_bayes.GaussianNB()),
 ]
@@ -77,7 +77,7 @@ for model in models:
     ]
     import random
 
-    random.shuffle(streams)
+    #random.shuffle(streams)
 
     out = Parallel(n_jobs=16)(
         delayed(task)(stream, model, dd)
