@@ -79,5 +79,8 @@ class MultiClassEvaluator(Evaluator):
                 for i in range(0, self.numberOfClasses)
             ]
         )
+        
+        if pc == 1:
+            return 0
 
         return (p0 - pc) / (1.0 - pc)
