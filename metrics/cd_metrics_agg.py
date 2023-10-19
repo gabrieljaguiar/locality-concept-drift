@@ -2,6 +2,7 @@ import pandas as pd
 import os
 from glob import glob
 
+"""
 scenarios = [
     "multi_class_global",
     "multi_class_local",
@@ -48,3 +49,13 @@ filt_group = full_df.loc[full_df["tp"] == 1].groupby(by=["drift_detector"])["del
 agg["delay_filt"] = filt_group.sum() / filt_group.count()
 global_agg = agg
 global_agg.reset_index().to_csv("global_metrics.csv")
+"""
+scenario = "no_drift"
+df_specific = pd.read_csv("{}_concept_drift_metrics.csv".format(scenario))
+grouped = df_specific.groupby(by=["drift_detector"])
+agg = grouped[["tp", "fn", "fp", "delay"]].sum()
+agg["delay"] = agg["delay"] / grouped["delay"].count()
+filt_group = df_specific.loc[df_specific["tp"] == 1].groupby(by=["drift_detector"])["delay"]
+agg["delay_filt"] = filt_group.sum() / filt_group.count()
+local_agg_1 = agg
+local_agg_1.reset_index().to_csv("{}_global_metrics.csv".format(scenario))

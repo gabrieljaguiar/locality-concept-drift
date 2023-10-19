@@ -10,23 +10,24 @@ TP_WINDOW = 5000
 classifiers = ["HT"]
 
 dds = [
-    #"ADWIN",
-    #"PageHinkley",
-    #"HDDM",
-    #"KSWIN",
-    #"DDM",
-    #"RDDM",
-    #"STEPD",
+    "ADWIN",
+    "PageHinkley",
+    "HDDM",
+    "KSWIN",
+    "DDM",
+    "RDDM",
+    "STEPD",
     #"GMA",
     "ECDD",
     "EDDM"
 ]
 
 scenarios = [
-    "multi_class_global",
-    "multi_class_local",
-    "single_class_global",
-    "single_class_local",
+    #"multi_class_global",
+    #"multi_class_local",
+    #"single_class_global",
+    #"single_class_local",
+    "no_drift",
 ]
 
 
@@ -44,6 +45,7 @@ for scenario in scenarios:
                 ]
                 print (scenario)
                 print (dd)
+                #print (streams)
                 if scenario != "no_drift":
                     for idx, file in tqdm(enumerate(streams), total=len(streams)):
                         splited_name = file.split("_")
@@ -99,7 +101,52 @@ for scenario in scenarios:
 
                         
                         metrics.append(metric)
-      
+                else:
+                    #print ("here")
+                    #print (streams)
+                    for idx, file in tqdm(enumerate(streams), total=len(streams)):
+                        splited_name = file.split("_")
+                        index_base = splited_name.index(scenario.split("_")[-1])
+                        #index_ds = splited_name.index("ds") + 1
+                        #index_ca = splited_name.index("ca") + 1
+                        index_c = splited_name.index("c") + 1
+                        index_f = splited_name.index("f") + 1
+                        drift_speed = 1
+                        class_affected = 1
+                        n_classes = int(splited_name[index_c])
+                        n_features = int(splited_name[index_f])
+                        difficulty = "no_drift"
+                            
+                        df = pd.read_csv(file)
+                        #print (df)
+                            
+                        tp = 0
+                        fp = 0
+                        fn = 0
+                        delay = 0
+                        for _, row in df.iterrows():
+                            #print (row)
+                            drift_idx = row["idx"]
+                            fp += 1
+                        if fp == 0:
+                            tp += 1
+                            
+                        metric = {
+                                "classifier": c,
+                                "scenario": scenario,
+                                "difficulty": difficulty,
+                                "n_classes": n_classes,
+                                "n_features": n_features,
+                                "drift_speed": drift_speed,
+                                "classes_affected": class_affected,
+                                "drift_detector": dd,
+                                "tp": tp,
+                                "fp": fp,
+                                "fn": fn,
+                                "delay": delay,
+                            }
+                            
+                        metrics.append(metric)
     i = 0 
     custom_dict = {
         "tp": 0,
@@ -112,6 +159,7 @@ for scenario in scenarios:
         i += 1
 
     metric_df = pd.DataFrame(metrics)
+    print (metrics)
     metric_df.sort_values(by=["scenario", "difficulty", "n_classes", "n_features", "drift_speed", "classes_affected", "drift_detector"], inplace=True)
     metric_df.to_csv("{}_concept_drift_metrics.csv".format(scenario), index=None)
     metric_df = metric_df.pivot(index=["scenario", "difficulty", "n_classes", "n_features", "drift_speed", "classes_affected"], columns=["drift_detector"], values=["tp", "fp", "fn", "delay"])
