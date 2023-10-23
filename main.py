@@ -11,7 +11,7 @@ from joblib import Parallel, delayed
 import itertools
 from drift_detectors import RDDM_M
 
-from drift_detectors import RDDM_M, GMA_M, EDDM_M, STEPD_M, ECDDWT_M
+from drift_detectors import RDDM_M, GMA_M, EDDM_M, STEPD_M, ECDDWT_M, ADWINDW, KSWINDW, PHDW
 from drift_detectors import GeometricMovingAverageConfig, ECDDWTConfig, EDDMConfig, RDDMConfig, STEPDConfig
 from drift_detectors import MCADWIN
 from river.stream import iter_csv
@@ -28,17 +28,18 @@ models = [
     #        seed=42,
     #    ),
     # ),
-    #("HT", tree.HoeffdingTreeClassifier()),
-    ("AHT", tree.HoeffdingAdaptiveTreeClassifier())
+    #("HT_2", tree.HoeffdingTreeClassifier()),
+    #("AHT", tree.HoeffdingAdaptiveTreeClassifier())
+    ("HTDD", drift.DriftRetrainingClassifier(model=tree.HoeffdingTreeClassifier()))
     # ("NB", naive_bayes.GaussianNB()),
 ]
 
 
 dds = [
-    ("ADWIN", drift.ADWIN()),
-    ("PageHinkley", drift.PageHinkley()),
+    ("ADWIN", ADWINDW()),
+    ("PageHinkley", PHDW()),
     ("HDDM", drift.binary.HDDM_W()),
-    ("KSWIN", drift.KSWIN()),
+    ("KSWIN", KSWINDW()),
     ("DDM", drift.binary.DDM()),
     ("RDDM", RDDM_M(RDDMConfig())),
     ("STEPD", STEPD_M(STEPDConfig())),
@@ -58,6 +59,8 @@ def task(stream_path, model, dd):
     dd_name, dd = dd
     if type(dd) == MCADWIN:
         dd = MCADWIN(n_classes=stream.n_classes)
+    if type(model) == drift.DriftRetrainingClassifier:
+        model.drift_detector = dd.clone()
     exp_name = "{}_{}_{}".format(model_name, dd_name, stream_name)
     print("Running {}...".format(exp_name))
     exp = Experiment(exp_name, stream_output, model, dd, stream, stream_size=100000)
@@ -69,17 +72,19 @@ def task(stream_path, model, dd):
 
 for model in models:
     PATH = "./datasets/"
-    EXT = "*.csv"
+    EXT = "*_ds_1_*.csv"
     streams = [
         file
         for path, subdir, files in os.walk(PATH)
         for file in glob(os.path.join(path, EXT))
     ]
-    import random
+    #import random
+    
+    streams = streams[:1]
 
     #random.shuffle(streams)
 
-    out = Parallel(n_jobs=32)(
+    out = Parallel(n_jobs=1)(
         delayed(task)(stream, model, dd)
         for stream, dd in itertools.product(streams, dds)
     )

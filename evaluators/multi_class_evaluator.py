@@ -15,8 +15,10 @@ class MultiClassEvaluator(Evaluator):
         pred_index = classVotes.index(max(classVotes))
         y_index = [i for i in range(self.numberOfClasses)].index(y)
 
-        prediction = sorted(list(probabilties.keys()))[pred_index]
-
+        #prediction = sorted(list(probabilties.keys()))[pred_index]
+        #prediction = probabilties.get(pred_index, 0)
+        prediction = pred_index
+        
         if self.totalObservedInstances > self.windowSize:
             class_to_be_removed = self.window[
                 self.totalObservedInstances % self.windowSize
@@ -65,8 +67,11 @@ class MultiClassEvaluator(Evaluator):
         gmean = 1
         for i in range(0, self.numberOfClasses):
             gmean *= self.getClassRecall(classIdx=i)
-
-        return math.pow(gmean, 1 / self.numberOfClasses)
+        try: 
+            return math.pow(gmean, 1 / self.numberOfClasses)
+        except:
+            print (gmean)
+            print (1/self.numberOfClasses)
 
     def getKappa(self):
         p0 = self.getAccuracy()

@@ -9,3 +9,4 @@ from frouros.detectors.concept_drift.streaming.window_based.stepd import STEPDCo
 from frouros.detectors.concept_drift.streaming.change_detection.geometric_moving_average import GeometricMovingAverageConfig
 from frouros.detectors.concept_drift.streaming.statistical_process_control.ecdd import ECDDWTConfig
 from frouros.detectors.concept_drift.streaming.statistical_process_control.eddm import EDDMConfig
+from .dwd_detectors import ADWINDW, KSWINDW, PHDW

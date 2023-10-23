@@ -7,10 +7,10 @@ from frouros.detectors.concept_drift.streaming.change_detection.geometric_moving
 from frouros.detectors.concept_drift.streaming.statistical_process_control.ecdd import ECDDWT
 from frouros.detectors.concept_drift.streaming.statistical_process_control.eddm import EDDM
 from river.base import DriftDetector
-from river.base.drift_detector import DriftDetector
+from river.base.drift_detector import DriftDetector, BinaryDriftAndWarningDetector
 
 
-class RDDM_M(DriftDetector):
+class RDDM_M(BinaryDriftAndWarningDetector):
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.rddm = RDDM(*args, **kwargs)
@@ -19,9 +19,10 @@ class RDDM_M(DriftDetector):
     def update(self, x: float) -> DriftDetector:
         self.rddm.update(x)
         self._drift_detected = self.rddm.drift
+        self._warning_detected = self.rddm.warning
 
 
-class STEPD_M(DriftDetector):
+class STEPD_M(BinaryDriftAndWarningDetector):
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.step_d = STEPD(*args, **kwargs)
@@ -30,8 +31,9 @@ class STEPD_M(DriftDetector):
     def update(self, x: float) -> DriftDetector:
         self.step_d.update(x)
         self._drift_detected = self.step_d.drift
+        self._warning_detected = self.step_d.warning
 
-class EDDM_M(DriftDetector):
+class EDDM_M(BinaryDriftAndWarningDetector):
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.eddm = EDDM(*args, **kwargs)
@@ -40,9 +42,10 @@ class EDDM_M(DriftDetector):
     def update(self, x: float) -> DriftDetector:
         self.eddm.update(x)
         self._drift_detected = self.eddm.drift
+        self._warning_detected = self.eddm.warning
 
 
-class ECDDWT_M(DriftDetector):
+class ECDDWT_M(BinaryDriftAndWarningDetector):
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.ecddwt = ECDDWT(*args, **kwargs)
@@ -51,6 +54,7 @@ class ECDDWT_M(DriftDetector):
     def update(self, x: float) -> DriftDetector:
         self.ecddwt.update(x)
         self._drift_detected = self.ecddwt.drift
+        self._warning_detected = self.ecddwt.warning
         
 class GMA_M(DriftDetector):
     def __init__(self, *args, **kwargs):
