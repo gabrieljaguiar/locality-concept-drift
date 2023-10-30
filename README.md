@@ -1,6 +1,4 @@
-# Multi-Class Concept Drift: Taxonomy, experiments and challenges
-
-
+# A comprehensive analysis of concept drift locality in data streams
 
 ## Single-Class
 
