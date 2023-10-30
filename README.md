@@ -39,8 +39,7 @@ streams = generate_streams(
 
 Multi-Class drifting data streams are generated using the file ``generators/multi_class.py``
 
-The following code serves as an illustrative example of generating streams featuring multi-class drifts. It facilitates the generation of streams with Local Drifts exhibiting 3, 5, and 10 classes, encompassing 2 and 5 features. Additionally, this code allows the specification of the number of affected classes in each scenario. For instance, with 3 classes, only 1 will be affected, while for 5 classes, there will be streams with 2 affected classes, and similarly, with 10 classes, the code facilitates scenarios where 3 classes are affected.
-
+The following code serves as an illustrative example of generating streams featuring multi-class drifts. It facilitates the generation of streams with Local Drifts exhibiting 3, 5, and 10 classes, encompassing 2 and 5 features. Additionally, this code allows the specification of the number of affected classes in each scenario. For instance, with 3 classes, only 1 will be affected, while for 5 classes, there will be streams with 2 and 3 affected classes, and so on. 
 
 ```python 
 from generators.single_class import generate_streams
