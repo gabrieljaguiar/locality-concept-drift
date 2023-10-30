@@ -21,15 +21,32 @@ g <- ggplot(df, aes(x=scenario, y=accuracy)) +
   ylab("Accuracy")
 
 
-scenario_to_be_plotted = "multi_class_local"
+colors <-c( 
+"#1f77b4",
+"#ff7f0e",
+"#2ca02c",
+"#d62728",
+"#9467bd",
+"#8c564b",
+"#e377c2",
+"#7f7f7f",
+"#bcbd22",
+"#17becf",
+"#aec7e8"
+)
+
+scenario_to_be_plotted = "single_class_local"
 g <- ggplot(df[df$scenario == scenario_to_be_plotted,], aes(x=difficulty, y=accuracy)) + 
   geom_boxplot(aes(color=difficulty)) + 
   scale_y_continuous(limits=c(0.25,0.99)) +
+  scale_color_manual(values=colors) + 
   theme_bw() +
-  labs(color="# of features") + 
-  theme(legend.position="none", axis.text.x = element_text(angle=30, vjust = 1, size=10, hjust = 1)) +
+  labs(color="") + 
+  #theme(legend.position="top", axis.text.x = element_text(angle=30, vjust = 1, size=10, hjust = 1)) +
+  theme(legend.position="top", axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
   xlab("") +
   ylab("Accuracy") 
 #facet_grid(scenario~.)
 
-ggsave("accuracy_multi_class_local_boxplot.pdf", g, width = 11.5, height=3)
+ggsave("accuracy_single_class_local_boxplot.pdf", g, width = 7.80, height=4)
+

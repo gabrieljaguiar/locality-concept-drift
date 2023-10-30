@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 TP_WINDOW = 5000
 
-classifiers = ["AHT", "HT"]
+classifiers = ["AHT", "HT", "HTDD"]
 
 dds = [
     "ADWIN",

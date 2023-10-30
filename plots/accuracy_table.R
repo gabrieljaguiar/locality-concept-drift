@@ -14,4 +14,4 @@ filtered <- df %>%
   group_by(classifier, scenario) %>%
   summarize(mean(accuracy), sd(accuracy))
 
-#write.csv(filtered, file="result.csv")
+write.csv(filtered, file="result.csv")
