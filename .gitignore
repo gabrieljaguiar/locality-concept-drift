@@ -167,4 +167,4 @@ cython_debug/
 datasets/backup/
 *_test.py
 
-figures/
+paper_example_stream.py
