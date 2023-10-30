@@ -378,6 +378,23 @@ def generate_streams(
     imbalance: bool = False,
     methods: list = None,
 ):
+    """
+    
+    This function will generate a collection of data streams with Single-Class concept drifts.
+
+    Args:
+        n_classes (list, int]): List of number of classes
+        n_features (list, int]): List of number of features
+        drift_width (list, int]): List of the drift width
+        locality (str, optional): Locality of the drift. Either Global or Local
+        generators (list, optional): List of generators to be used.
+        imbalance (bool, optional): If imbalanced data streams are going to be generated.
+        methods (list, optional): Specific difficulties to be generated.
+    
+    Returns:
+        streams: List of generated streams
+
+    """
     if generators == None:
         generators = ["rbf", "rt"]
 

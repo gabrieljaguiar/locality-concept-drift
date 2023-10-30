@@ -1,37 +1,28 @@
-from river import tree, drift, naive_bayes
-from river.datasets.synth import RandomRBF
-from generators.concept_drift import ConceptDriftStream
-from generators.multi_class_drift import MultiClassDrift
-from evaluators.multi_class_evaluator import MultiClassEvaluator
-from generators.imbalance_generators import MultiClassImbalancedStream
+from river import tree, drift
 from experiment import Experiment
-
-# from stream_generators import streams
 from joblib import Parallel, delayed
 import itertools
 from drift_detectors import RDDM_M
 
-from drift_detectors import RDDM_M, GMA_M, EDDM_M, STEPD_M, ECDDWT_M, ADWINDW, KSWINDW, PHDW
-from drift_detectors import GeometricMovingAverageConfig, ECDDWTConfig, EDDMConfig, RDDMConfig, STEPDConfig
+from drift_detectors import (
+    RDDM_M,
+    EDDM_M,
+    STEPD_M,
+    ECDDWT_M,
+    ADWINDW,
+    KSWINDW,
+    PHDW,
+)
+from drift_detectors import ECDDWTConfig, EDDMConfig, RDDMConfig, STEPDConfig
 from drift_detectors import MCADWIN
-from river.stream import iter_csv
 from glob import glob
 import os
 from utils.csv import CSVStream
 
 models = [
-    # (
-    #    "LB",
-    #    ensemble.LeveragingBaggingClassifier(
-    #        model=(tree.HoeffdingTreeClassifier()),
-    #        n_models=10,
-    #        seed=42,
-    #    ),
-    # ),
-    #("HT_2", tree.HoeffdingTreeClassifier()),
-    #("AHT", tree.HoeffdingAdaptiveTreeClassifier())
+    ("HT", tree.HoeffdingTreeClassifier()),
+    ("AHT", tree.HoeffdingAdaptiveTreeClassifier()),
     ("HTDD", drift.DriftRetrainingClassifier(model=tree.HoeffdingTreeClassifier()))
-    # ("NB", naive_bayes.GaussianNB()),
 ]
 
 
@@ -43,10 +34,8 @@ dds = [
     ("DDM", drift.binary.DDM()),
     ("RDDM", RDDM_M(RDDMConfig())),
     ("STEPD", STEPD_M(STEPDConfig())),
-    #("GMA", GMA_M(GeometricMovingAverageConfig())),
     ("ECDD", ECDDWT_M(ECDDWTConfig())),
-    ("EDDM", EDDM_M(EDDMConfig()))
-
+    ("EDDM", EDDM_M(EDDMConfig())),
 ]
 
 
@@ -72,17 +61,12 @@ def task(stream_path, model, dd):
 
 for model in models:
     PATH = "./datasets/"
-    EXT = "*_ds_1_*.csv"
+    EXT = "*.csv"
     streams = [
         file
         for path, subdir, files in os.walk(PATH)
         for file in glob(os.path.join(path, EXT))
     ]
-    #import random
-    
-    streams = streams[:1]
-
-    #random.shuffle(streams)
 
     out = Parallel(n_jobs=1)(
         delayed(task)(stream, model, dd)
