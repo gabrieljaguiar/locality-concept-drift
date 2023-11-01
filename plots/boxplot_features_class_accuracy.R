@@ -35,7 +35,7 @@ colors <-c(
 "#aec7e8"
 )
 
-scenario_to_be_plotted = "single_class_local"
+scenario_to_be_plotted = "multi_class_local"
 g <- ggplot(df[df$scenario == scenario_to_be_plotted,], aes(x=difficulty, y=accuracy)) + 
   geom_boxplot(aes(color=difficulty)) + 
   scale_y_continuous(limits=c(0.25,0.99)) +
@@ -48,5 +48,5 @@ g <- ggplot(df[df$scenario == scenario_to_be_plotted,], aes(x=difficulty, y=accu
   ylab("Accuracy") 
 #facet_grid(scenario~.)
 
-ggsave("accuracy_single_class_local_boxplot.pdf", g, width = 7.80, height=4)
+ggsave("accuracy_multi_class_local_boxplot.pdf", g, width = 7.80, height=2.55)
 
