@@ -22,7 +22,7 @@ from utils.csv import CSVStream
 models = [
     ("HT", tree.HoeffdingTreeClassifier()),
     ("AHT", tree.HoeffdingAdaptiveTreeClassifier()),
-    ("HTDD", drift.DriftRetrainingClassifier(model=tree.HoeffdingTreeClassifier()))
+    ("HT_DW", drift.DriftRetrainingClassifier(model=tree.HoeffdingTreeClassifier()))
 ]
 
 

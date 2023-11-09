@@ -1,8 +1,32 @@
 # A comprehensive analysis of concept drift locality in data streams
 
+This repository provides the source code, drift detectors, classifiers, experimental setup, and results for the experimental study on locality of concept drifts submitted for publication to the journal Expert Systems with Applications. The manuscript preprint is available at [arXiv](https://arxiv.org/abs/2204.03719).
+
+This [website](https://people.vcu.edu/~acano/locality-drifts) provides interactive plots to display the metrics over time and result files for each experiment, algorithm, and benchmark.
+
+The experiments were run using Python 3.11 and all required packages are available in the file ``requirements.txt``
+
+## Abstract
+
 Adapting to drifting data streams is a significant challenge in online learning. Concept drift must be detected for effective model adaptation to evolving data properties. Concept drift can impact the data distribution entirely or partially, which makes it difficult for drift detectors to accurately identify the concept drift. Despite the numerous concept drift detectors in the literature, standardized procedures and benchmarks for comprehensive evaluation considering the locality of the drift are lacking. We present a novel categorization of concept drift based on its locality and scale. A systematic approach leads to a set of 2,760 benchmark problems, reflecting various difficulty levels following our proposed categorization. We conduct a comparative assessment of 8 state-of-the-art drift detectors across diverse difficulties, highlighting their strengths and weaknesses for future research. We examine how drift locality influences the classifier performance and propose strategies for different drift categories to minimize the recovery time. Lastly, we provide lessons learned and recommendations for future concept drift research.
 
-## Usage
+## Algorithms
+The package  `drift_detectors` contains 7 state-of-the-art drift detectors algorithms plus 2 from the `river` package. Some of the drift detectors were wrapped into a new class in order to fit better the experiment script.
+
+|Algorithm|Script|
+|--|--|
+|ADWIN| `drift_detectors.ADWINDW`|
+|PageHinkley| `drift_detectors.PHDW`|
+|HDDM| `drift.binary.HDDM_W()`|
+|KSWIN| `drift_detectors.KSWINDW`|
+|DDM| `drift.binary.DDM()`|
+|RDDM| `drift_detectors.RDDM_M`|
+|STEPD| `drift_detectors.STEPD_M`|
+|ECDD| `drift_detectors.ECDDWT_M`|
+|EDDM| `drift_detectors.EDDM_M`|
+
+
+## Benchmark streams
 
 ### Single-Class drift
 
@@ -66,6 +90,12 @@ streams = generate_streams(
     <td valign="top"><img src="figures/multi_global_drift.gif"></td>
   </tr>
  </table>
+
+## Results
+
+This [website]() provides interactive plots to display the metrics over time and result tables for each experiment, algorithm, and benchmark.
+
+Complete csv results for all experiments, algorithms, and benchmarks reported on the manuscript are available to [download]() to facilitate the transparency, reproducibility, and extendability of the experimental study.
 
 
 ## Citation
