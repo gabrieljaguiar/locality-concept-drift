@@ -2,7 +2,7 @@
 
 This repository provides the source code, drift detectors, classifiers, experimental setup, and results for the experimental study on locality of concept drifts submitted for publication to the journal Expert Systems with Applications. The manuscript preprint is available at [arXiv](https://arxiv.org/abs/2204.03719).
 
-This [website](https://people.vcu.edu/~acano/locality-drifts) provides interactive plots to display the metrics over time and result files for each experiment, algorithm, and benchmark.
+This [website](https://gabrieljaguiar.github.io/comprehensive-concept-drift/) provides interactive plots to display the metrics over time and result files for each experiment, algorithm, and benchmark.
 
 The experiments were run using Python 3.11 and all required packages are available in the file ``requirements.txt``
 
@@ -93,9 +93,9 @@ streams = generate_streams(
 
 ## Results
 
-This [website]() provides interactive plots to display the metrics over time and result tables for each experiment, algorithm, and benchmark.
+This [website](https://gabrieljaguiar.github.io/comprehensive-concept-drift/) provides interactive plots to display the metrics over time and result tables for each experiment, algorithm, and benchmark.
 
-Complete csv results for all experiments, algorithms, and benchmarks reported on the manuscript are available to [download]() to facilitate the transparency, reproducibility, and extendability of the experimental study.
+Complete csv results for all experiments, algorithms, and benchmarks reported on the manuscript are available to [download](https://drive.google.com/drive/u/1/folders/1D0xy9u9bDgvGZTt_ZoioChVStM0JCtG7) to facilitate the transparency, reproducibility, and extendability of the experimental study.
 
 
 ## Citation
