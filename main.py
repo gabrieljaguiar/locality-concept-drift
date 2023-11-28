@@ -46,6 +46,7 @@ def task(stream_path, model, dd):
     print(stream_output)
     model_name, model = model
     dd_name, dd = dd
+    dd = dd.clone()
     if type(dd) == MCADWIN:
         dd = MCADWIN(n_classes=stream.n_classes)
     if type(model) == drift.DriftRetrainingClassifier:
