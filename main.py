@@ -45,6 +45,7 @@ def task(stream_path, model, dd):
     stream_output = os.path.dirname(stream_path).replace("datasets", "output")
     print(stream_output)
     model_name, model = model
+    model = model.clone()
     dd_name, dd = dd
     dd = dd.clone()
     if type(dd) == MCADWIN:
