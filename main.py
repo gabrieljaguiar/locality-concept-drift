@@ -12,9 +12,10 @@ from drift_detectors import (
     ADWINDW,
     KSWINDW,
     PHDW,
+    FHDDMDW,
+    FHDDMSDW
 )
 from drift_detectors import ECDDWTConfig, EDDMConfig, RDDMConfig, STEPDConfig
-from drift_detectors import MCADWIN
 from glob import glob
 import os
 from utils.csv import CSVStream
@@ -26,7 +27,7 @@ models = [
 ]
 
 
-dds = [
+"""dds = [
     ("ADWIN", ADWINDW()),
     ("PageHinkley", PHDW()),
     ("HDDM", drift.binary.HDDM_W()),
@@ -36,6 +37,11 @@ dds = [
     ("STEPD", STEPD_M(STEPDConfig())),
     ("ECDD", ECDDWT_M(ECDDWTConfig())),
     ("EDDM", EDDM_M(EDDMConfig())),
+]"""
+
+dds = [
+    ("FHDMM", FHDDMDW()),
+    ("FHDMMS", FHDDMSDW()),
 ]
 
 
@@ -48,8 +54,6 @@ def task(stream_path, model, dd):
     model = model.clone()
     dd_name, dd = dd
     dd = dd.clone()
-    if type(dd) == MCADWIN:
-        dd = MCADWIN(n_classes=stream.n_classes)
     if type(model) == drift.DriftRetrainingClassifier:
         model.drift_detector = dd.clone()
     exp_name = "{}_{}_{}".format(model_name, dd_name, stream_name)
@@ -62,7 +66,7 @@ def task(stream_path, model, dd):
 
 
 for model in models:
-    PATH = "./datasets/"
+    PATH = "./datasets/datasets/"
     EXT = "*.csv"
     streams = [
         file
@@ -70,7 +74,7 @@ for model in models:
         for file in glob(os.path.join(path, EXT))
     ]
 
-    out = Parallel(n_jobs=1)(
+    out = Parallel(n_jobs=8)(
         delayed(task)(stream, model, dd)
         for stream, dd in itertools.product(streams, dds)
     )

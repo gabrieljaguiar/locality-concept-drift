@@ -4,7 +4,7 @@ from river.tree import HoeffdingAdaptiveTreeClassifier
 from evaluators.multi_class_evaluator import MultiClassEvaluator
 import pandas as pd
 from tqdm import tqdm
-from drift_detectors import DDM_OCI, MCADWIN
+
 
 # add class imbalance monitoring
 
@@ -39,14 +39,8 @@ class Experiment:
 
     def updateDriftDetector(self, y, y_hat):  # DDM
         x = 1 if (y == y_hat) else 0
-        if (type(self.driftDetector) == DDM_OCI) and (
-            y == self.classProportions.index(min(self.classProportions))
-        ):
-            self.driftDetector.update(x)
-        if type(self.driftDetector) == MCADWIN:
-            self.driftDetector.update(y, y == y_hat)
-        else:
-            self.driftDetector.update(x)
+
+        self.driftDetector.update(x)
 
     def run(self):
         self.metrics = []
@@ -63,9 +57,6 @@ class Experiment:
                 if self.driftDetector.drift_detected:
                     self.drifts.append({"idx": i, "alert": 1})
                     drift_detected += 1
-                if type(self.driftDetector) == MCADWIN:
-                    if self.driftDetector.local_drift:
-                        local_drift += 1
 
                 if (i + 1) % self.evaluationWindow == 0:
                     metric = {
