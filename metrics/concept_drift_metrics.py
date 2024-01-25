@@ -22,12 +22,14 @@ dds = [
     "EDDM"
 ]
 
+dds = ["FHDDM", "FHDDMS"]
+
 scenarios = [
-    #"multi_class_global",
-    #"multi_class_local",
-    #"single_class_global",
-    #"single_class_local",
-    "no_drift",
+    "multi_class_global",
+    "multi_class_local",
+    "single_class_global",
+    "single_class_local",
+    #"no_drift",
 ]
 
 
@@ -159,11 +161,11 @@ for scenario in scenarios:
         i += 1
 
     metric_df = pd.DataFrame(metrics)
-    print (metrics)
+    print (metric_df)
     metric_df.sort_values(by=["scenario", "difficulty", "n_classes", "n_features", "drift_speed", "classes_affected", "drift_detector"], inplace=True)
-    metric_df.to_csv("{}_concept_drift_metrics.csv".format(scenario), index=None)
+    metric_df.to_csv("added_{}_concept_drift_metrics.csv".format(scenario), index=None)
     metric_df = metric_df.pivot(index=["scenario", "difficulty", "n_classes", "n_features", "drift_speed", "classes_affected"], columns=["drift_detector"], values=["tp", "fp", "fn", "delay"])
     metric_df = metric_df.swaplevel(0, 1, axis=1).sort_index(axis=1, level=[0, 1], key=lambda x: x.map(custom_dict))
     metric_df.reset_index(inplace=True)
-    metric_df.to_csv("{}_pivoted_concept_drift_metrics.csv".format(scenario), index=None)
+    metric_df.to_csv("added_{}_pivoted_concept_drift_metrics.csv".format(scenario), index=None)
                     

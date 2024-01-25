@@ -52,9 +52,13 @@ class CSVStream:
 class ARFFStream:
     def __init__(self, arff_file: str, target: str = None) -> None:
         self.arff_file = arff_file
-        self.data = pd.read_csv(loadarff(self.arff_file)[0])
+        arff_loaded = loadarff(self.arff_file)
+        self.data = pd.DataFrame(arff_loaded[0])
+        
         if target is None:
             self.target = self.data.columns[-1]
+        codes, uniques = pd.factorize(self.data.iloc[:, -1])
+        self.data.iloc[:, -1] = codes
         self.classes = self.data[self.target].unique()
         self.n_classes = len(self.classes)
         self.n_features = self.data.shape[1] - 1
