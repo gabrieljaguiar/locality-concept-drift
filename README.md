@@ -1,6 +1,6 @@
 # A comprehensive analysis of concept drift locality in data streams
 
-This repository provides the source code, drift detectors, classifiers, experimental setup, and results for the experimental study on locality of concept drifts. The manuscript preprint is available at [arXiv](https://arxiv.org/abs/2311.06396).
+This repository provides the source code, drift detectors, classifiers, experimental setup, and results for the experimental study on locality of concept drifts. The manuscript is available at [Knowledge-based Systems](https://www.sciencedirect.com/science/article/abs/pii/S0950705124001709?casa_token=2MNh6hqhCCYAAAAA:nn79iAoF_wO6MmH9u_qPd-CulsZUuCpP9ABdQQ-aE0c7TRFwiH394umyzmJq8lCMJYJlTFMxwWbb).
 
 This [website](https://gabrieljaguiar.github.io/comprehensive-concept-drift/) provides interactive plots to display the metrics over time and result files for each experiment, algorithm, and benchmark.
 
@@ -99,12 +99,12 @@ Complete csv results for all experiments, algorithms, and benchmarks reported on
 
 ## Citation
 ```
-@misc{aguiar2023local,
-  author={Aguiar, Gabriel and Cano, Alberto},
+@article{aguiar2024comprehensive,
   title={A comprehensive analysis of concept drift locality in data streams},
-  year={2023},
-  eprint={2311.06396},
-  archivePrefix={arXiv},
-  primaryClass={cs.LG}
+  author={Aguiar, Gabriel J and Cano, Alberto},
+  journal={Knowledge-Based Systems},
+  pages={111535},
+  year={2024},
+  publisher={Elsevier}
 }
 ```
